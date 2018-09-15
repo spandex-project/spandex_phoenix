@@ -1,6 +1,7 @@
 defmodule SpandexPhoenix.Instrumenter do
   @moduledoc """
-  Phoenix instrumenter callback module
+  Phoenix instrumenter callback module.
+  More details can be found in [the Phoenix documentation](https://hexdocs.pm/phoenix/Phoenix.Endpoint.html#module-phoenix-default-events).
   """
 
   @tracer Application.get_env(:spandex_phoenix, :tracer) || raise "You must configure a :tracer for :spandex_phoenix"

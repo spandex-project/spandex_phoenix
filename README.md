@@ -27,16 +27,12 @@ end
 Configure it to use your desired `Spandex.Tracer` module in `config.exs`:
 
 ```elixir
-use Mix.Config
-
 config :spandex_phoenix, tracer: MyApp.Tracer
 ```
 
 Configure your Phoenix `Endpoint` to use this library as an `instrumenter`:
 
 ```elixir
-use Mix.Config
-
 config :my_app, MyAppWeb.Endpoint,
   # ... existing config ...
   instrumenters: [SpandexPhoenix.Instrumenter]

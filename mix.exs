@@ -9,6 +9,7 @@ defmodule SpandexPhoenix.MixProject do
       start_permanent: Mix.env() == :prod,
       package: package(),
       description: description(),
+      docs: docs(),
       deps: deps()
     ]
   end
@@ -34,11 +35,20 @@ defmodule SpandexPhoenix.MixProject do
     """
   end
 
+  defp docs do
+    [
+      main: "readme",
+      extras: [
+        "README.md"
+      ]
+    ]
+  end
+
   defp deps do
     [
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:phoenix, "~> 1.0"},
-      {:spandex, "~> 2.2"}
+      {:spandex, "~> 2.0"}
     ]
   end
 end
