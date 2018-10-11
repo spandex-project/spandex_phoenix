@@ -9,18 +9,18 @@ defmodule SpandexPhoenix.Instrumenter do
   def phoenix_controller_call(:start, _compiled_meta, %{conn: conn}) do
     controller = Phoenix.Controller.controller_module(conn)
     action = Phoenix.Controller.action_name(conn)
-    @tracer.start_span("Phoenix.Controller", resource: "#{controller}.#{action}")
+    apply(@tracer, :start_span, ["Phoenix.Controller", [resource: "#{controller}.#{action}"]])
   end
 
   def phoenix_controller_call(:stop, _time_diff, _start_meta) do
-    @tracer.finish_span()
+    apply(@tracer, :finish_span, [])
   end
 
   def phoenix_controller_render(:start, _compiled_meta, %{view: view}) do
-    @tracer.start_span("Phoenix.View", resource: view)
+    apply(@tracer, :start_span, ["Phoenix.View", [resource: view]])
   end
 
   def phoenix_controller_render(:stop, _time_diff, _start_meta) do
-    @tracer.finish_span()
+    apply(@tracer, :finish_span, [])
   end
 end
