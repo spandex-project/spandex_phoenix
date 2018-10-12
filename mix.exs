@@ -8,6 +8,8 @@ defmodule SpandexPhoenix.MixProject do
       app: :spandex_phoenix,
       version: @version,
       elixir: "~> 1.6",
+      elixirc_paths: elixirc_paths(Mix.env()),
+      compilers: compilers(Mix.env()),
       start_permanent: Mix.env() == :prod,
       package: package(),
       description: description(),
@@ -33,6 +35,12 @@ defmodule SpandexPhoenix.MixProject do
     ]
   end
 
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
+
+  defp compilers(:test), do: [:phoenix] ++ Mix.compilers()
+  defp compilers(_), do: Mix.compilers()
+
   defp description() do
     """
     Tools for integrating Phoenix with Spandex.
@@ -54,8 +62,9 @@ defmodule SpandexPhoenix.MixProject do
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:git_ops, "~> 0.3.3", only: :dev},
       {:inch_ex, github: "rrrene/inch_ex", only: [:dev, :test]},
-      {:phoenix, "~> 1.0"},
-      {:spandex, "~> 2.0"}
+      {:phoenix, "~> 1.0", optional: true, only: [:dev, :test]},
+      {:plug, "~> 1.0"},
+      {:spandex, "~> 2.2"}
     ]
   end
 end

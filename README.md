@@ -5,17 +5,8 @@
 [![Hex pm](http://img.shields.io/hexpm/v/spandex_phoenix.svg?style=flat)](https://hex.pm/packages/spandex_phoenix)
 [![Ebert](https://ebertapp.io/github/spandex-project/spandex_phoenix.svg)](https://ebertapp.io/github/spandex-project/spandex_phoenix)
 
-Phoenix integration for the
+Phoenix and Plug integrations for the
 [Spandex](https://github.com/spandex-project/spandex) tracing library.
-
-By configuring `SpandexPhoenix.Instrumenter` in your Phoenix `instrumenters`
-list, you will automatically get spans created for `Phoenix.Controller` and
-`Phoenix.View` timing, with the `resource` set to the name of the controller
-action or view name.
-
-Note that this should be used in addition to the `Spandex.Plug` plugs to start
-the trace and top-level span, as this instrumenter only creates child spans,
-assuming that the trace will already have been created.
 
 ## Usage
 
@@ -35,7 +26,43 @@ Configure it to use your desired `Spandex.Tracer` module in `config.exs`:
 config :spandex_phoenix, tracer: MyApp.Tracer
 ```
 
-Configure your Phoenix `Endpoint` to use this library as an `instrumenter`:
+Add `use SpandexPhoenix` to the appropriate module. This will "wrap" the
+module with tracing and error-reporting via Spandex.
+
+Phoenix integration:
+
+```elixir
+defmodule MyAppWeb.Endpoint do
+  use Phoenix.Endpoint, otp_app: :my_app
+  use SpandexPhoenix
+
+  # ...
+end
+```
+
+Plug integration:
+```elixir
+defmodule MyApp.Router do
+  use Plug.Router
+  use SpandexPhoenix
+
+  # ...
+end
+```
+
+## Integrating with Phoenix Instrumentation
+
+If you are using Phoenix and you configure `SpandexPhoenix.Instrumenter` in
+your Phoenix `instrumenters` list, you will automatically get spans created for
+`Phoenix.Controller` and `Phoenix.View` timing, with the `resource` set to the
+name of the controller action or view name.
+
+Note that this should be used in addition to the `use SpandexPhoenix`
+macro to start the trace and top-level span, as the instrumenter only creates
+child spans, assuming that the trace will already have been created.
+
+Configure your Phoenix `Endpoint` to use this library as one of its
+`instrumenters`:
 
 ```elixir
 config :my_app, MyAppWeb.Endpoint,
@@ -43,5 +70,7 @@ config :my_app, MyAppWeb.Endpoint,
   instrumenters: [SpandexPhoenix.Instrumenter]
 ```
 
-The docs can be found at
-[https://hexdocs.pm/spandex_phoenix](https://hexdocs.pm/spandex_phoenix).
+More details, including customization options for the `use` macro, can be found
+in the docs on [Hexdocs].
+
+[Hexdocs]: https://hexdocs.pm/spandex_phoenix
