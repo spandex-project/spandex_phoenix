@@ -1,15 +1,19 @@
-# Changelog
+# Change Log
+
 All notable changes to this project will be documented in this file.
+See [Conventional Commits](Https://conventionalcommits.org) for commit guidelines.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+<!-- changelog -->
 
-## [Unreleased]
-- No unreleased changes currently.
+## [0.1.1](https://github.com/spandex-project/spandex_phoenix/compare/0.1.0...0.1.1) (2018-10-15)
 
-## [0.1.0]
+### Bug Fixes:
 
-### Added
-- Initial release of the `spandex_phoenix` library.
+* Indirectly call Tracer to remove compiler warnings ([#1](https://github.com/spandex-project/spandex_phoenix/pull/1))
 
-[0.1.0]: https://github.com/spandex-project/spandex_phoenix/commit/c0ab823e2ab5af5ed9953f5ec5008bf34ffa4f4e
+
+## [0.1.0](https://github.com/spandex-project/spandex_phoenix/compare/0.1.0...0.1.0) (2018-09-15)
+
+### Features:
+
+* Initial release! 🚀 🎉
