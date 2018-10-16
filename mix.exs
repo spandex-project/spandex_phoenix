@@ -1,10 +1,12 @@
 defmodule SpandexPhoenix.MixProject do
   use Mix.Project
 
+  @version "0.1.1"
+
   def project do
     [
       app: :spandex_phoenix,
-      version: "0.1.0",
+      version: @version,
       elixir: "~> 1.6",
       start_permanent: Mix.env() == :prod,
       package: package(),
@@ -47,6 +49,7 @@ defmodule SpandexPhoenix.MixProject do
   defp deps do
     [
       {:ex_doc, ">= 0.0.0", only: :dev},
+      {:git_ops, "~> 0.3.3", only: :dev},
       {:phoenix, "~> 1.0"},
       {:spandex, "~> 2.0"}
     ]
