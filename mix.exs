@@ -12,7 +12,9 @@ defmodule SpandexPhoenix.MixProject do
       package: package(),
       description: description(),
       docs: docs(),
-      deps: deps()
+      deps: deps(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [coveralls: :test, "coveralls.circle": :test]
     ]
   end
 
@@ -48,6 +50,7 @@ defmodule SpandexPhoenix.MixProject do
 
   defp deps do
     [
+      {:excoveralls, "~> 0.10", only: :test},
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:git_ops, "~> 0.3.3", only: :dev},
       {:phoenix, "~> 1.0"},
