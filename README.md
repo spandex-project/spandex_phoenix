@@ -1,9 +1,9 @@
 # SpandexPhoenix
 [![CircleCI](https://circleci.com/gh/spandex-project/spandex_phoenix.svg?style=svg)](https://circleci.com/gh/spandex-project/spandex_phoenix)
-[![Inline docs](http://inch-ci.org/github/spandex-project/spandex.svg)](http://inch-ci.org/github/spandex-project/spandex_phoenix)
-[![Coverage Status](https://coveralls.io/repos/github/spandex-project/spandex/badge.svg)](https://coveralls.io/github/spandex-project/spandex_phoenix)
-[![Hex pm](http://img.shields.io/hexpm/v/spandex.svg?style=flat)](https://hex.pm/packages/spandex_phoenix)
-[![Ebert](https://ebertapp.io/github/spandex-project/spandex.svg)](https://ebertapp.io/github/spandex-project/spandex_phoenix)
+[![Inline docs](http://inch-ci.org/github/spandex-project/spandex_phoenix.svg)](http://inch-ci.org/github/spandex-project/spandex_phoenix)
+[![Coverage Status](https://coveralls.io/repos/github/spandex-project/spandex_phoenix/badge.svg)](https://coveralls.io/github/spandex-project/spandex_phoenix)
+[![Hex pm](http://img.shields.io/hexpm/v/spandex_phoenix.svg?style=flat)](https://hex.pm/packages/spandex_phoenix)
+[![Ebert](https://ebertapp.io/github/spandex-project/spandex_phoenix.svg)](https://ebertapp.io/github/spandex-project/spandex_phoenix)
 
 Phoenix integration for the
 [Spandex](https://github.com/spandex-project/spandex) tracing library.
