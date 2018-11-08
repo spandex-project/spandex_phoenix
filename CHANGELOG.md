@@ -6,7 +6,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 <!-- changelog -->
 
 
-## [0.2.0](https://github.com/spandex-project/spandex_phoenix/compare/v0.2.0...v0.1.1) (2018-11-8)
+## [0.2.0](https://github.com/spandex-project/spandex_phoenix/compare/v0.1.1...v0.2.0) (2018-11-8)
 
 ### Features:
 
