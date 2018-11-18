@@ -45,6 +45,17 @@ defmodule StartTracePlugTest do
       assert {:ok, %Spandex.SpanContext{}} = TestTracer.current_context()
     end
 
+    test "returns a connection when a provided filter_traces function returns a false value" do
+      defmodule NoTraceFilter do
+        def filter_traces(_conn) do
+          false
+        end
+      end
+
+      conn = call(StartTrace, :head, "/", filter_traces: &NoTraceFilter.filter_traces/1)
+      assert %Plug.Conn{} = conn
+    end
+
     test "defaults the root span name to 'request'" do
       call(StartTrace, :get, "/", [])
       assert %Spandex.Span{name: "request"} = TestTracer.current_span()
