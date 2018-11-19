@@ -33,6 +33,8 @@ defmodule SpandexPhoenix.Plug.StartTrace do
   def call(conn, opts) do
     if opts[:filter_traces].(conn) do
       begin_tracing(conn, opts)
+    else
+      conn
     end
   end
 
