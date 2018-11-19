@@ -5,6 +5,22 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.3.0](https://github.com/spandex-project/spandex_phoenix/compare/0.2.1...v0.2.1) (2018-11-19)
+
+## Bug Fixes:
+
+* Return a conn when the request is filtered
+
+
+
+### Features:
+
+* Add a Plug wrapper to trace requests
+
+### Bug Fixes:
+
+* Require at least Plug 1.3
+
 
 ## [0.2.1](https://github.com/spandex-project/spandex_phoenix/compare/v0.2.0...v0.2.1) (2018-11-10)
 
