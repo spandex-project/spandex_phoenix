@@ -53,7 +53,7 @@ end
 ### Customizing Traces
 
 Traces can be customized and filtered by passing options to the `use SpandexPhoenix` macro. 
-See the [Hexdocs] documentation on that module for more information.
+See the [documentation for SpandexPhoenix] for more information.
 
 ## Integrating with Phoenix Instrumentation
 
@@ -78,3 +78,4 @@ config :my_app, MyAppWeb.Endpoint,
 More details can also be found in the docs on [Hexdocs].
 
 [Hexdocs]: https://hexdocs.pm/spandex_phoenix
+[documentation for SpandexPhoenix]: https://hexdocs.pm/spandex_phoenix/SpandexPhoenix.html
