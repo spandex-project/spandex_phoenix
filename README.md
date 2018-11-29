@@ -50,6 +50,11 @@ defmodule MyApp.Router do
 end
 ```
 
+### Customizing Traces
+
+Traces can be customized and filtered by passing options to the `use SpandexPhoenix` macro. 
+See the [Hexdocs] documentation on that module for more information.
+
 ## Integrating with Phoenix Instrumentation
 
 If you are using Phoenix and you configure `SpandexPhoenix.Instrumenter` in
@@ -70,7 +75,6 @@ config :my_app, MyAppWeb.Endpoint,
   instrumenters: [SpandexPhoenix.Instrumenter]
 ```
 
-More details, including customization options for the `use` macro, can be found
-in the docs on [Hexdocs].
+More details can also be found in the docs on [Hexdocs].
 
 [Hexdocs]: https://hexdocs.pm/spandex_phoenix
