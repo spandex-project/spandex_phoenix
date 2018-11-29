@@ -252,11 +252,11 @@ defmodule SpandexPhoenix do
   end
 
   defp replace_path_param_with_name(inverted_params, path_component) do
-    decoded_component = URI.decode_www_form(path_component)
+    decoded_component = URI.decode(path_component)
 
-    case Enum.find(inverted_params, fn {param_value, _param_name} -> param_value == decoded_component end) do
-      nil -> decoded_component
-      {_param_value, param_name} -> ":#{param_name}"
-    end
+    Enum.find_value(inverted_params, fn 
+      {^decoded_component, param_name} -> ":#{param_name}"
+      _ -> nil
+    end, decoded_component)
   end
 end
