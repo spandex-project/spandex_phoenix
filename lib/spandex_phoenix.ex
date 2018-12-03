@@ -183,10 +183,7 @@ defmodule SpandexPhoenix do
   def default_metadata(conn) do
     conn = Plug.Conn.fetch_query_params(conn)
 
-    route =
-      conn
-      |> route_name()
-      |> URI.decode_www_form()
+    route = route_name(conn)
 
     user_agent =
       conn
@@ -200,7 +197,7 @@ defmodule SpandexPhoenix do
         method: method,
         query_string: conn.query_string,
         status_code: conn.status,
-        url: URI.decode_www_form(conn.request_path),
+        url: URI.decode(conn.request_path),
         user_agent: user_agent
       ],
       resource: method <> " " <> route,

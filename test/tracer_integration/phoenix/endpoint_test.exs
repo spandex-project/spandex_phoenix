@@ -232,7 +232,7 @@ defmodule TracerWithPhoenixEndpointTest do
 
     test "handles non-ASCII characters in path params" do
       assert capture_log(fn ->
-               call(Endpoint, :get, "/hello/%f0%9f%a4%af")
+               call(Endpoint, :get, "/hello/+%f0%9f%a4%af")
              end) =~ ~r|Processing with TracerWithPhoenixEndpointTest.Controller.hello/2|
 
       assert_receive {
@@ -247,7 +247,7 @@ defmodule TracerWithPhoenixEndpointTest do
         }
       }
 
-      assert Keyword.get(http, :url) == "/hello/🤯"
+      assert Keyword.get(http, :url) == "/hello/+🤯"
     end
 
     test "validates the options passed to the use macro" do
