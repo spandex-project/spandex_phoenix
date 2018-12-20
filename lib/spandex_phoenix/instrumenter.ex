@@ -18,28 +18,32 @@ if Code.ensure_loaded?(Phoenix) do
     [the Phoenix documentation]: https://hexdocs.pm/phoenix/Phoenix.Endpoint.html#module-phoenix-default-events
     """
 
-    @tracer Application.get_env(:spandex_phoenix, :tracer) || raise("You must configure a :tracer for :spandex_phoenix")
+    @tracer_not_configured_msg "You must configure a :tracer for :spandex_phoenix"
 
     @doc false
     def phoenix_controller_call(:start, _compiled_meta, %{conn: conn}) do
+      tracer = Application.get_env(:spandex_phoenix, :tracer) || raise(@tracer_not_configured_msg)
       controller = Phoenix.Controller.controller_module(conn)
       action = Phoenix.Controller.action_name(conn)
-      apply(@tracer, :start_span, ["Phoenix.Controller", [resource: "#{controller}.#{action}"]])
+      apply(tracer, :start_span, ["Phoenix.Controller", [resource: "#{controller}.#{action}"]])
     end
 
     @doc false
     def phoenix_controller_call(:stop, _time_diff, _start_meta) do
-      apply(@tracer, :finish_span, [])
+      tracer = Application.get_env(:spandex_phoenix, :tracer) || raise(@tracer_not_configured_msg)
+      apply(tracer, :finish_span, [])
     end
 
     @doc false
     def phoenix_controller_render(:start, _compiled_meta, %{view: view}) do
-      apply(@tracer, :start_span, ["Phoenix.View", [resource: view]])
+      tracer = Application.get_env(:spandex_phoenix, :tracer) || raise(@tracer_not_configured_msg)
+      apply(tracer, :start_span, ["Phoenix.View", [resource: view]])
     end
 
     @doc false
     def phoenix_controller_render(:stop, _time_diff, _start_meta) do
-      apply(@tracer, :finish_span, [])
+      tracer = Application.get_env(:spandex_phoenix, :tracer) || raise(@tracer_not_configured_msg)
+      apply(tracer, :finish_span, [])
     end
   end
 end
