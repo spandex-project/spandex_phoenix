@@ -5,6 +5,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.3.1](https://github.com/spandex-project/spandex_phoenix/compare/0.3.0...v0.3.1) (2018-12-20)
+
+## Bug Fixes:
+
+* Configure tracer runtime instead of compile time
+
+
 ## [v0.3.0](https://github.com/spandex-project/spandex_phoenix/compare/0.2.1...v0.2.1) (2018-11-19)
 
 ## Bug Fixes:
