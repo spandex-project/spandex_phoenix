@@ -230,14 +230,22 @@ defmodule SpandexPhoenix do
         _ -> %RuntimeError{message: Exception.format_banner(kind, reason)}
       end
 
-    tracer.span_error(exception, stack)
-    tracer.update_span(error: [error?: true])
-
+    mark_span_as_error(tracer, exception, stack)
     FinishTrace.call(conn, finish_opts)
     :erlang.raise(kind, reason, stack)
   end
 
   # Private Helpers
+
+  defp mark_span_as_error(tracer, exception, stack) do
+    # Normalize the span name for urls with no resource
+    if match?(%Phoenix.Router.NoRouteError{}, exception) do
+      tracer.update_span(resource: "Not Found")
+    end
+
+    tracer.span_error(exception, stack)
+    tracer.update_span(error: [error?: true])
+  end
 
   # Set by Plug.Router
   defp route_name(%Plug.Conn{private: %{plug_route: {route, _fn}}}), do: route
