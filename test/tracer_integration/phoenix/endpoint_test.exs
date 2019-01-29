@@ -27,6 +27,10 @@ defmodule TracerWithPhoenixEndpointTest do
   end
 
   defmodule ErrorView do
+    def render("404.html", _) do
+      "404 not found"
+    end
+
     def render("500.html", %{kind: kind, reason: reason}) do
       "500: #{inspect(kind)}, #{inspect(reason)}"
     end
@@ -193,6 +197,30 @@ defmodule TracerWithPhoenixEndpointTest do
       assert "/throw" == Keyword.get(http, :url)
 
       assert %RuntimeError{message: "** (throw) \"Test\""} = Keyword.get(error, :exception)
+      assert is_list(Keyword.get(error, :stacktrace))
+      assert Keyword.get(error, :error?)
+    end
+
+    test "renames trace to RouteNotFound when Phoenix raises NoRouteError" do
+      assert_raise Phoenix.Router.NoRouteError, fn -> call(Endpoint, :get, "/not_found") end
+
+      assert_receive {
+        :sent_trace,
+        %Spandex.Trace{
+          spans: [
+            %Spandex.Span{error: error, http: http, name: "request", resource: "Not Found"}
+          ]
+        }
+      }
+
+      assert "GET" == Keyword.get(http, :method)
+      assert 404 == Keyword.get(http, :status_code)
+      assert "/not_found" == Keyword.get(http, :url)
+
+      assert %Phoenix.Router.NoRouteError{
+               message: "no route found for GET /not_found (TracerWithPhoenixEndpointTest.Router)"
+             } = Keyword.get(error, :exception)
+
       assert is_list(Keyword.get(error, :stacktrace))
       assert Keyword.get(error, :error?)
     end
