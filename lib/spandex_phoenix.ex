@@ -183,10 +183,7 @@ defmodule SpandexPhoenix do
   def default_metadata(conn) do
     conn = Plug.Conn.fetch_query_params(conn)
 
-    route =
-      conn
-      |> route_name()
-      |> URI.decode_www_form()
+    route = route_name(conn)
 
     user_agent =
       conn
@@ -200,7 +197,7 @@ defmodule SpandexPhoenix do
         method: method,
         query_string: conn.query_string,
         status_code: conn.status,
-        url: URI.decode_www_form(conn.request_path),
+        url: URI.decode(conn.request_path),
         user_agent: user_agent
       ],
       resource: method <> " " <> route,
@@ -247,16 +244,15 @@ defmodule SpandexPhoenix do
 
   # Phoenix doesn't set the plug_route for us, so we have to figure it out ourselves
   defp route_name(%Plug.Conn{path_params: path_params, path_info: path_info}) do
-    inverted_params = Enum.map(path_params, fn {k, v} -> {v, k} end)
-    "/" <> Enum.map_join(path_info, "/", &replace_path_param_with_name(inverted_params, &1))
+    "/" <> Enum.map_join(path_info, "/", &replace_path_param_with_name(path_params, &1))
   end
 
-  defp replace_path_param_with_name(inverted_params, path_component) do
-    decoded_component = URI.decode_www_form(path_component)
+  defp replace_path_param_with_name(path_params, path_component) do
+    decoded_component = URI.decode(path_component)
 
-    case Enum.find(inverted_params, fn {param_value, _param_name} -> param_value == decoded_component end) do
-      nil -> decoded_component
-      {_param_value, param_name} -> ":#{param_name}"
-    end
+    Enum.find_value(path_params, decoded_component, fn
+      {param_name, ^decoded_component} -> ":#{param_name}"
+      _ -> nil
+    end)
   end
 end
