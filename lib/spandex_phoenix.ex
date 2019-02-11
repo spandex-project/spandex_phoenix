@@ -38,7 +38,7 @@ defmodule SpandexPhoenix do
       ```elixir
       defmodule MyAppWeb.Endpoint do
         use Phoenix.Endpoint, otp_app: :my_app
-        use SpandexPhoenix, filter_traces: &filter_traces/1
+        use SpandexPhoenix, filter_traces: &__MODULE__.filter_traces/1
 
         def filter_traces(conn) do
           conn.method in ~w(DELETE GET POST PUT)
