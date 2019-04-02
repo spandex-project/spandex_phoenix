@@ -5,6 +5,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.4.0](https://github.com/spandex-project/spandex_phoenix/compare/0.3.2...v0.4.0) (2019-4-2)
+
+
+
+
+### Features:
+
+* Normalize Phoenix.NoRouteErrors into a single resource name, "Not Found"
+
 ## [v0.3.2](https://github.com/spandex-project/spandex_phoenix/compare/0.3.1...v0.3.2) (2019-2-4)
 
 
