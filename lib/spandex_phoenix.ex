@@ -239,7 +239,7 @@ defmodule SpandexPhoenix do
 
   defp mark_span_as_error(tracer, exception, stack) do
     # Normalize the span name for urls with no resource
-    if Code.ensure_loaded?(Phoenix.Router.NoRouteError) && Map.get(exception, :__struct__) == Phoenix.Router.NoRouteError do
+    if Code.ensure_loaded?(Phoenix) && Map.get(exception, :__struct__) == Phoenix.Router.NoRouteError do
       tracer.update_span(resource: "Not Found")
     end
 
