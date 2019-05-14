@@ -201,14 +201,14 @@ defmodule TracerWithPhoenixEndpointTest do
       assert Keyword.get(error, :error?)
     end
 
-    test "renames trace to RouteNotFound when Phoenix raises NoRouteError" do
+    test "renames resource to Not Found and doesn't mark as an error when Phoenix raises NoRouteError" do
       assert_raise Phoenix.Router.NoRouteError, fn -> call(Endpoint, :get, "/not_found") end
 
       assert_receive {
         :sent_trace,
         %Spandex.Trace{
           spans: [
-            %Spandex.Span{error: error, http: http, name: "request", resource: "Not Found"}
+            %Spandex.Span{error: nil, http: http, name: "request", resource: "Not Found"}
           ]
         }
       }
@@ -216,13 +216,6 @@ defmodule TracerWithPhoenixEndpointTest do
       assert "GET" == Keyword.get(http, :method)
       assert 404 == Keyword.get(http, :status_code)
       assert "/not_found" == Keyword.get(http, :url)
-
-      assert %Phoenix.Router.NoRouteError{
-               message: "no route found for GET /not_found (TracerWithPhoenixEndpointTest.Router)"
-             } = Keyword.get(error, :exception)
-
-      assert is_list(Keyword.get(error, :stacktrace))
-      assert Keyword.get(error, :error?)
     end
 
     test "allows customizing metadata" do
