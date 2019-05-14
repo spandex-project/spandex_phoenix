@@ -5,23 +5,26 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.4.1](https://github.com/spandex-project/spandex_phoenix/compare/0.4.0...v0.4.1) (2019-5-14)
+
+### Bug Fixes:
+
+* Fix compilation errors when instrumenting a `Plug` without `Phoenix`.
+
+
 ## [v0.4.0](https://github.com/spandex-project/spandex_phoenix/compare/0.3.2...v0.4.0) (2019-4-2)
-
-
-
 
 ### Features:
 
 * Normalize Phoenix.NoRouteErrors into a single resource name, "Not Found"
 
+
 ## [v0.3.2](https://github.com/spandex-project/spandex_phoenix/compare/0.3.1...v0.3.2) (2019-2-4)
-
-
-
 
 ### Bug Fixes:
 
 * decode URI's properly
+
 
 ## [v0.3.1](https://github.com/spandex-project/spandex_phoenix/compare/0.3.0...v0.3.1) (2018-12-20)
 
@@ -35,8 +38,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ## Bug Fixes:
 
 * Return a conn when the request is filtered
-
-
 
 ### Features:
 
