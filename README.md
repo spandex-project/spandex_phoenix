@@ -42,7 +42,7 @@ end
 
 If you use Phoenix, you don't need to use the following integration most likely, otherwise, you get the error messages like 
 ```
-Tried to start a trace over top of another trace
+[error] Tried to start a trace over top of another trace
 ```
 
 Plug integration:
