@@ -40,6 +40,11 @@ defmodule MyAppWeb.Endpoint do
 end
 ```
 
+If you use Phoenix, you don't need to use the following integration most likely, otherwise, you get the error messages like 
+```
+[error] Tried to start a trace over top of another trace
+```
+
 Plug integration:
 ```elixir
 defmodule MyApp.Router do
