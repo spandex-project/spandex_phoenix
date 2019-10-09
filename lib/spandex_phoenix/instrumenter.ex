@@ -27,39 +27,15 @@ defmodule SpandexPhoenix.Instrumenter do
       @otp_app otp_app
 
       @doc false
-      def phoenix_controller_call(:start, _compiled_meta, %{conn: conn}) do
+      def phoenix_controller_call(step, compiled_meta, %{conn: conn}) do
         tracer = @tracer || Application.get_env(@otp_app, __MODULE__)[:tracer] || raise(@tracer_not_configured_msg)
-        apply(tracer, :start_span, ["Phoenix.Controller", [resource: controller_resource_name(conn)]])
+        SpandexPhoenix.Instrumenter.phoenix_controller_call(step, compiled_meta, %{conn: conn}, tracer: tracer)
       end
 
       @doc false
-      def phoenix_controller_call(:stop, _time_diff, _start_meta) do
+      def phoenix_controller_render(step, _compiled_meta, %{view: view}) do
         tracer = @tracer || Application.get_env(@otp_app, __MODULE__)[:tracer] || raise(@tracer_not_configured_msg)
-        apply(tracer, :finish_span, [])
-      end
-
-      @doc false
-      def phoenix_controller_render(:start, _compiled_meta, %{view: view}) do
-        tracer = @tracer || Application.get_env(@otp_app, __MODULE__)[:tracer] || raise(@tracer_not_configured_msg)
-        apply(tracer, :start_span, ["Phoenix.View", [resource: view]])
-      end
-
-      @doc false
-      def phoenix_controller_render(:stop, _time_diff, _start_meta) do
-        tracer =
-          @tracer || Application.get_env(@otp_app, :spandex_phoenix)[:tracer] || raise(@tracer_not_configured_msg)
-
-        apply(tracer, :finish_span, [])
-      end
-
-      defp controller_resource_name(conn) do
-        if Code.ensure_loaded?(Phoenix) do
-          controller = Phoenix.Controller.controller_module(conn)
-          action = Phoenix.Controller.action_name(conn)
-          "#{controller}.#{action}"
-        else
-          "unknown.unknown"
-        end
+        SpandexPhoenix.Instrumenter.phoenix_controller_render(step, compiled_meta, %{conn: conn}, tracer: tracer)
       end
     end
   end
