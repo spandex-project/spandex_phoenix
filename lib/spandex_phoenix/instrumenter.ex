@@ -25,19 +25,19 @@ defmodule SpandexPhoenix.Instrumenter do
 
       @doc false
       def phoenix_controller_call(:start, _compiled_meta, %{conn: conn}) do
-        tracer = tracer || Application.get_env(otp_app, :spandex_phoenix)[:tracer] || raise(@tracer_not_configured_msg)
+        tracer = tracer || Application.get_env(otp_app, __MODULE__)[:tracer] || raise(@tracer_not_configured_msg)
         apply(tracer, :start_span, ["Phoenix.Controller", [resource: controller_resource_name(conn)]])
       end
 
       @doc false
       def phoenix_controller_call(:stop, _time_diff, _start_meta) do
-        tracer = tracer || Application.get_env(otp_app, :spandex_phoenix)[:tracer] || raise(@tracer_not_configured_msg)
+        tracer = tracer || Application.get_env(otp_app, __MODULE__)[:tracer] || raise(@tracer_not_configured_msg)
         apply(tracer, :finish_span, [])
       end
 
       @doc false
       def phoenix_controller_render(:start, _compiled_meta, %{view: view}) do
-        tracer = tracer || Application.get_env(otp_app, :spandex_phoenix)[:tracer] || raise(@tracer_not_configured_msg)
+        tracer = tracer || Application.get_env(otp_app, __MODULE__)[:tracer] || raise(@tracer_not_configured_msg)
         apply(tracer, :start_span, ["Phoenix.View", [resource: view]])
       end
 
