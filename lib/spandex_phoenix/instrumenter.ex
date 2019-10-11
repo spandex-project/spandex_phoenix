@@ -43,26 +43,30 @@ defmodule SpandexPhoenix.Instrumenter do
   @tracer_not_configured_msg "You must configure a :tracer for :spandex_phoenix"
 
   @doc false
-  def phoenix_controller_call(:start, _compiled_meta, %{conn: conn}) do
-    tracer = Application.get_env(:spandex_phoenix, :tracer) || raise(@tracer_not_configured_msg)
+  def phoenix_controller_call(action, meta, data, opts \\ [])
+
+  def phoenix_controller_call(:start, _compiled_meta, %{conn: conn}, opts) do
+    tracer = opts[:tracer] || Application.get_env(:spandex_phoenix, :tracer) || raise(@tracer_not_configured_msg)
     apply(tracer, :start_span, ["Phoenix.Controller", [resource: controller_resource_name(conn)]])
   end
 
   @doc false
-  def phoenix_controller_call(:stop, _time_diff, _start_meta) do
-    tracer = Application.get_env(:spandex_phoenix, :tracer) || raise(@tracer_not_configured_msg)
+  def phoenix_controller_call(:stop, _time_diff, _start_meta, opts) do
+    tracer = opts[:tracer] || Application.get_env(:spandex_phoenix, :tracer) || raise(@tracer_not_configured_msg)
     apply(tracer, :finish_span, [])
   end
 
   @doc false
-  def phoenix_controller_render(:start, _compiled_meta, %{view: view}) do
-    tracer = Application.get_env(:spandex_phoenix, :tracer) || raise(@tracer_not_configured_msg)
+  def phoenix_controller_render(action, meta, data, opts \\ [])
+
+  def phoenix_controller_render(:start, _compiled_meta, %{view: view}, opts) do
+    tracer = opts[:tracer] || Application.get_env(:spandex_phoenix, :tracer) || raise(@tracer_not_configured_msg)
     apply(tracer, :start_span, ["Phoenix.View", [resource: view]])
   end
 
   @doc false
-  def phoenix_controller_render(:stop, _time_diff, _start_meta) do
-    tracer = Application.get_env(:spandex_phoenix, :tracer) || raise(@tracer_not_configured_msg)
+  def phoenix_controller_render(:stop, _time_diff, _start_meta, opts) do
+    tracer = opts[:tracer] || Application.get_env(:spandex_phoenix, :tracer) || raise(@tracer_not_configured_msg)
     apply(tracer, :finish_span, [])
   end
 
