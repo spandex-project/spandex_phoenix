@@ -3,7 +3,7 @@
 [![Inline docs](http://inch-ci.org/github/spandex-project/spandex_phoenix.svg)](http://inch-ci.org/github/spandex-project/spandex_phoenix)
 [![Coverage Status](https://coveralls.io/repos/github/spandex-project/spandex_phoenix/badge.svg)](https://coveralls.io/github/spandex-project/spandex_phoenix)
 [![Hex pm](http://img.shields.io/hexpm/v/spandex_phoenix.svg?style=flat)](https://hex.pm/packages/spandex_phoenix)
-[![Ebert](https://ebertapp.io/github/spandex-project/spandex_phoenix.svg)](https://ebertapp.io/github/spandex-project/spandex_phoenix)
+[![SourceLevel](https://sourcelevel.io/github/spandex-project/spandex_phoenix.svg)](https://sourcelevel.io/github/spandex-project/spandex_phoenix)
 
 Phoenix and Plug integrations for the
 [Spandex](https://github.com/spandex-project/spandex) tracing library.
