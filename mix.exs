@@ -62,7 +62,7 @@ defmodule SpandexPhoenix.MixProject do
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:git_ops, "~> 0.4.1", only: :dev},
       {:inch_ex, github: "rrrene/inch_ex", only: [:dev, :test]},
-      {:phoenix, "~> 1.0", optional: true, only: [:dev, :test]},
+      {:phoenix, "~> 1.5", optional: true, only: [:dev, :test]},
       {:plug, "~> 1.3"},
       {:spandex, "~> 2.2"}
     ]

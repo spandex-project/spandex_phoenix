@@ -40,7 +40,7 @@ defmodule MyAppWeb.Endpoint do
 end
 ```
 
-If you use Phoenix, you don't need to use the following integration most likely, otherwise, you get the error messages like 
+If you use Phoenix, you don't need to use the following integration most likely, otherwise, you get the error messages like
 ```
 [error] Tried to start a trace over top of another trace
 ```
@@ -57,10 +57,30 @@ end
 
 ### Customizing Traces
 
-Traces can be customized and filtered by passing options to the `use SpandexPhoenix` macro. 
+Traces can be customized and filtered by passing options to the `use SpandexPhoenix` macro.
 See the [documentation for SpandexPhoenix] for more information.
 
+## Integrating with Phoenix Telemetry (Phx >= 1.5)
+
+SpandexPhoenix supports using Phoenix 1.5's Telemetry events to create spans for `Phoenix.Controller` timing, with the `resource` name set to the controller action.
+
+Note that this should be used in addition to the `use SpandexPhoenix` macro in your Endpoint, to start the trace and top-level span.
+
+To attach `Spandex.Telemetry`'s event listeners, call `Spandex.Telemetry.attach()` during your application's startup:
+
+```elixir
+defmodule MyApp.Application do
+  def start(_, _) do
+    # ...
+    SpandexPhoenix.attach()
+    # ...
+    # Supervisor.start_link ...
+  end
+end
+```
+
 ## Integrating with Phoenix Instrumentation
+
 
 If you are using Phoenix and you configure `SpandexPhoenix.Instrumenter` in
 your Phoenix `instrumenters` list, you will automatically get spans created for
