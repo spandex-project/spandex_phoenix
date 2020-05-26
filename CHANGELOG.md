@@ -7,14 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [v0.4.2](https://github.com/spandex-project/spandex_phoenix/compare/0.4.1...v0.4.2) (2020-5-26)
 
-
-
-
-## [v0.4.1](https://github.com/spandex-project/spandex_phoenix/compare/0.4.1...v0.4.1) (2020-5-26)
-
-
-
-
 ### Bug Fixes:
 
 * update spandex version dependency
