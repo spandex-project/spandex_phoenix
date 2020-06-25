@@ -57,9 +57,7 @@ defmodule SpandexPhoenix.Telemetry do
     events = [
       [:phoenix, :router_dispatch, :start],
       [:phoenix, :router_dispatch, :stop],
-      # Phx 1.5.3 switched to `:exception`; it was `:failure` before that
-      [:phoenix, :router_dispatch, :exception],
-      [:phoenix, :router_dispatch, :failure]
+      [:phoenix, :router_dispatch, :exception]
     ]
 
     :telemetry.attach_many("spandex-phoenix-telemetry", events, &__MODULE__.handle_event/4, opts)
@@ -90,9 +88,12 @@ defmodule SpandexPhoenix.Telemetry do
     end
   end
 
-  def handle_event([:phoenix, :router_dispatch, _exception], _, _, %{tracer: tracer}) do
+  def handle_event([:phoenix, :router_dispatch, :exception], _, meta, %{tracer: tracer}) do
+    # phx 1.5.4-dev has a breaking change that switches error to reason
+    # maybe they'll see reason and keep using the old key too, but for now here's this
+    error = meta[:reason] || meta[:error]
     if tracer.current_trace_id() do
-      tracer.span_error(meta.error, meta.stacktrace)
+      tracer.span_error(error, meta.stacktrace)
       tracer.update_span(error: [error?: true])
       tracer.finish_trace()
     end
