@@ -31,7 +31,7 @@ defmodule SpandexPhoenix.Telemetry do
 
       A function that takes a conn and returns a keyword list of metadata.
 
-      Default: `&Spandex.default_metadata/1`
+      Default: `&SpandexPhoenix.default_metadata/1`
   """
   def install(opts \\ []) do
     unless function_exported?(:telemetry, :attach_many, 4) do
@@ -49,7 +49,7 @@ defmodule SpandexPhoenix.Telemetry do
     end
 
     filter_traces = Keyword.get(opts, :filter_traces, fn _ -> true end)
-    customize_metadata = Keyword.get(opts, :customize_metadata, &Spandex.default_metadata/1)
+    customize_metadata = Keyword.get(opts, :customize_metadata, &SpandexPhoenix.default_metadata/1)
     span_name = Keyword.get(opts, :span_name, "request")
 
     opts = %{tracer: tracer, filter_traces: filter_traces, customize_metadata: customize_metadata, span_name: span_name}
@@ -63,7 +63,7 @@ defmodule SpandexPhoenix.Telemetry do
     :telemetry.attach_many("spandex-phoenix-telemetry", events, &__MODULE__.handle_event/4, opts)
   end
 
-  def handle_event([:phoenix, :router_dispatch, :start], _, %{conn: conn}, config) do
+  def handle_event([:phoenix, :router_dispatch, :start], _, meta, config) do
     %{
       tracer: tracer,
       filter_traces: filter_traces,
@@ -71,6 +71,7 @@ defmodule SpandexPhoenix.Telemetry do
       customize_metadata: customize_metadata
     } = config
 
+    conn = meta.conn
     # It's possible the router handed this request to a non-controller plug;
     # we only handle controller actions though, which is what the `is_atom` clauses are testing for
     if is_atom(meta[:plug]) and is_atom(meta[:plug_opts]) and filter_traces.(conn) do
