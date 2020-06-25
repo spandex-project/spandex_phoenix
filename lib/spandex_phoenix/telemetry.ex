@@ -36,7 +36,7 @@ defmodule SpandexPhoenix.Telemetry do
   def install(opts \\ []) do
     unless function_exported?(:telemetry, :attach_many, 4) do
       raise "Cannot install telemetry events without `:telemetry` dependency." <>
-            "Did you mean to use the Phoenix Instrumenters integration instead?"
+              "Did you mean to use the Phoenix Instrumenters integration instead?"
     end
 
     tracer =
@@ -57,7 +57,7 @@ defmodule SpandexPhoenix.Telemetry do
     events = [
       [:phoenix, :router_dispatch, :start],
       [:phoenix, :router_dispatch, :stop],
-      # Phx 1.5.3 switched to exception; it was failure before that
+      # Phx 1.5.3 switched to `:exception`; it was `:failure` before that
       [:phoenix, :router_dispatch, :exception],
       [:phoenix, :router_dispatch, :failure]
     ]
@@ -65,7 +65,7 @@ defmodule SpandexPhoenix.Telemetry do
     :telemetry.attach_many("spandex-phoenix-telemetry", events, &__MODULE__.handle_event/4, opts)
   end
 
-  def handle_event([:phoenix, :router_dispatch, :start], _, meta, config) do
+  def handle_event([:phoenix, :router_dispatch, :start], _, %{conn: conn}, config) do
     %{
       tracer: tracer,
       filter_traces: filter_traces,
@@ -84,13 +84,13 @@ defmodule SpandexPhoenix.Telemetry do
     end
   end
 
-  def handle_event([:phoenix, :router_dispatch, :stop], _, meta, %{tracer: tracer}) do
+  def handle_event([:phoenix, :router_dispatch, :stop], _, _, %{tracer: tracer}) do
     if tracer.current_trace_id() do
       tracer.finish_span()
     end
   end
 
-  def handle_event([:phoenix, :router_dispatch, _exception], _, meta, %{tracer: tracer}) do
+  def handle_event([:phoenix, :router_dispatch, _exception], _, _, %{tracer: tracer}) do
     if tracer.current_trace_id() do
       tracer.span_error(meta.error, meta.stacktrace)
       tracer.update_span(error: [error?: true])
