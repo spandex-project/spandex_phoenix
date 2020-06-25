@@ -13,8 +13,32 @@ defmodule SpandexPhoenix.Telemetry do
       The tracing module to be used for traces in your Endpoint.
 
       Default: `Application.get_env(:spandex_phoenix, :tracer)`
+
+  * `:filter_traces` (`fun((Plug.Conn.t()) -> boolean)`)
+
+      A function that takes a conn and returns true if a trace should be created
+      for that conn, and false if it should be ignored.
+
+      Default: `fn _ -> true end` (include all)
+
+  * `:span_name` (`String.t()`)
+
+      The name for the span this module creates.
+
+      Default: `"request"`
+
+  * `:customize_metadata` (`fun((Plug.Conn.t()) -> Keyword.t())`)
+
+      A function that takes a conn and returns a keyword list of metadata.
+
+      Default: `&Spandex.default_metadata/1`
   """
   def install(opts \\ []) do
+    unless function_exported?(:telemetry, :attach_many, 4) do
+      raise "Cannot install telemetry events without `:telemetry` dependency." <>
+            "Did you mean to use the Phoenix Instrumenters integration instead?"
+    end
+
     tracer =
       Keyword.get_lazy(opts, :tracer, fn ->
         Application.get_env(:spandex_phoenix, :tracer)
@@ -37,26 +61,36 @@ defmodule SpandexPhoenix.Telemetry do
       [:phoenix, :router_dispatch, :exception],
       [:phoenix, :router_dispatch, :failure]
     ]
- 
+
     :telemetry.attach_many("spandex-phoenix-telemetry", events, &__MODULE__.handle_event/4, opts)
   end
 
   def handle_event([:phoenix, :router_dispatch, :start], _, meta, config) do
-    %{tracer: tracer, filter_traces: filter_traces, span_name: span_name} = config
+    %{
+      tracer: tracer,
+      filter_traces: filter_traces,
+      span_name: span_name,
+      customize_metadata: customize_metadata
+    } = config
+
     # It's possible the router handed this request to a non-controller plug;
     # we only handle controller actions though, which is what the `is_atom` clauses are testing for
     if is_atom(meta[:plug]) and is_atom(meta[:plug_opts]) and filter_traces.(conn) do
       tracer.start_span(span_name, resource: "#{meta.plug}.#{meta.plug_opts}")
+
+      conn
+      |> customize_metadata.()
+      |> tracer.update_top_span()
     end
   end
 
-  def handle_event([:phoenix, :router_dispatch, :stop], _, meta, %{tracer: tracer} = config) do
+  def handle_event([:phoenix, :router_dispatch, :stop], _, meta, %{tracer: tracer}) do
     if tracer.current_trace_id() do
       tracer.finish_span()
     end
   end
 
-  def handle_event([:phoenix, :router_dispatch, _exception], _, meta, %{tracer: tracer} = config) do
+  def handle_event([:phoenix, :router_dispatch, _exception], _, meta, %{tracer: tracer}) do
     if tracer.current_trace_id() do
       tracer.span_error(meta.error, meta.stacktrace)
       tracer.update_span(error: [error?: true])

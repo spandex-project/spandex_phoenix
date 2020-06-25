@@ -26,6 +26,44 @@ Configure it to use your desired `Spandex.Tracer` module in `config.exs`:
 config :spandex_phoenix, tracer: MyApp.Tracer
 ```
 
+### Usage: Phx >= 1.5
+
+Phoenix 1.5 implemented telemetry events SpandexPhoenix attachs to to manage spans.
+To use SpandexPhoenix with Phoenix >= 1.5, simply install its telemetry handlers in your
+application's `start/2` callback.
+
+```elixir
+defmodule MyApp.Application do
+  def start(_, _) do
+    # ...
+
+    SpandexPhoenix.Telemetry.install()
+
+    # ...
+  end
+end
+```
+
+SpandexPhoenix supports using Phoenix 1.5's Telemetry events to create spans for
+`Phoenix.Controller` timing, with the `resource` name set to the controller action.
+
+To attach `Spandex.Telemetry`'s event handlers, call `Spandex.Telemetry.install()`
+during your application's startup:
+
+```elixir
+defmodule MyApp.Application do
+  def start(_, _) do
+    # ...
+    SpandexPhoenix.Telemetry.install()
+    # ...
+  end
+end
+```
+
+See `Spandex.Telemetry.install/1` documentation for event handler configuration.
+
+### Usage: Plug & Phx < 1.5
+
 Add `use SpandexPhoenix` to the appropriate module. This will "wrap" the
 module with tracing and error-reporting via Spandex.
 
@@ -55,31 +93,12 @@ defmodule MyApp.Router do
 end
 ```
 
-### Customizing Traces
+#### Customizing Traces
 
 Traces can be customized and filtered by passing options to the `use SpandexPhoenix` macro.
 See the [documentation for SpandexPhoenix] for more information.
 
-## Integrating with Phoenix Telemetry (Phx >= 1.5)
-
-SpandexPhoenix supports using Phoenix 1.5's Telemetry events to create spans for `Phoenix.Controller` timing, with the `resource` name set to the controller action.
-
-Note that this should be used in addition to the `use SpandexPhoenix` macro in your Endpoint, to start the trace and top-level span.
-
-To attach `Spandex.Telemetry`'s event listeners, call `Spandex.Telemetry.attach()` during your application's startup:
-
-```elixir
-defmodule MyApp.Application do
-  def start(_, _) do
-    # ...
-    SpandexPhoenix.Telemetry.attach()
-    # ...
-    # Supervisor.start_link ...
-  end
-end
-```
-
-## Integrating with Phoenix Instrumentation
+#### Integrating with Phoenix Instrumentation
 
 
 If you are using Phoenix and you configure `SpandexPhoenix.Instrumenter` in
