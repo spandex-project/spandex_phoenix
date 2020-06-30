@@ -1,7 +1,7 @@
 defmodule SpandexPhoenix.MixProject do
   use Mix.Project
 
-  @version "0.4.1"
+  @version "0.4.2"
 
   def project do
     [
@@ -64,7 +64,7 @@ defmodule SpandexPhoenix.MixProject do
       {:inch_ex, github: "rrrene/inch_ex", only: [:dev, :test]},
       {:phoenix, "~> 1.0", optional: true, only: [:dev, :test]},
       {:plug, "~> 1.3"},
-      {:spandex, "~> 2.2"},
+      {:spandex, "~> 2.2 or ~> 3.0"},
       {:telemetry, "~> 0.4", optional: true, only: [:dev, :test]}
     ]
   end
