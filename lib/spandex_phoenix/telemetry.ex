@@ -63,6 +63,7 @@ defmodule SpandexPhoenix.Telemetry do
     :telemetry.attach_many("spandex-phoenix-telemetry", events, &__MODULE__.handle_event/4, opts)
   end
 
+  @doc false
   def handle_event([:phoenix, :router_dispatch, :start], _, meta, config) do
     %{
       tracer: tracer,
