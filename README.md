@@ -89,7 +89,6 @@ See the [documentation for SpandexPhoenix] for more information.
 
 #### Integrating with Phoenix Instrumentation
 
-
 If you are using Phoenix and you configure `SpandexPhoenix.Instrumenter` in
 your Phoenix `instrumenters` list, you will automatically get spans created for
 `Phoenix.Controller` and `Phoenix.View` timing, with the `resource` set to the
