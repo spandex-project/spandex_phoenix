@@ -205,17 +205,6 @@ defmodule SpandexPhoenix do
     ]
   end
 
-  @doc false
-  def controller_resource_name(conn) do
-    if Code.ensure_loaded?(Phoenix) do
-      controller = Phoenix.Controller.controller_module(conn)
-      action = Phoenix.Controller.action_name(conn)
-      "#{controller}.#{action}"
-    else
-      "unknown.unknown"
-    end
-  end
-
   @already_sent {:plug_conn, :sent}
 
   @doc false
