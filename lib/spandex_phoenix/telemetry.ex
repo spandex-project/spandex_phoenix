@@ -90,8 +90,8 @@ defmodule SpandexPhoenix.Telemetry do
   end
 
   def handle_event([:phoenix, :router_dispatch, :exception], _, meta, %{tracer: tracer}) do
-    # phx 1.5.4-dev has a breaking change that switches error to reason
-    # maybe they'll see reason and keep using the old key too, but for now here's this
+    # phx 1.5.4-dev has a breaking change that switches `:error` to `:reason`
+    # maybe they'll see "reason" and keep using the old key too, but for now here's this
     error = meta[:reason] || meta[:error]
     if tracer.current_trace_id() do
       tracer.span_error(error, meta.stacktrace)

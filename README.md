@@ -26,28 +26,17 @@ Configure it to use your desired `Spandex.Tracer` module in `config.exs`:
 config :spandex_phoenix, tracer: MyApp.Tracer
 ```
 
-### Usage: Phx >= 1.5
+### Usage: Phx >= 1.5 (Telemetry)
 
-Phoenix 1.5 implemented telemetry events SpandexPhoenix attachs to to manage spans.
-To use SpandexPhoenix with Phoenix >= 1.5, simply install its telemetry handlers in your
-application's `start/2` callback.
+**Upgrade Note**: *If you're updating your SpandexPhoenix code from using it with previous versions of Pheonix,
+you must first remove all the code detailed in `Usage: Plug & Phx < 1.5` before following
+telemetry installation instructions below.*
 
-```elixir
-defmodule MyApp.Application do
-  def start(_, _) do
-    # ...
-
-    SpandexPhoenix.Telemetry.install()
-
-    # ...
-  end
-end
-```
 
 SpandexPhoenix supports using Phoenix 1.5's Telemetry events to create spans for
 `Phoenix.Controller` timing, with the `resource` name set to the controller action.
 
-To attach `Spandex.Telemetry`'s event handlers, call `Spandex.Telemetry.install()`
+To attach `Spandex.Telemetry`'s event handlers, call `Spandex.Telemetry.install/{0,1}`
 during your application's startup:
 
 ```elixir
@@ -60,7 +49,7 @@ defmodule MyApp.Application do
 end
 ```
 
-See `Spandex.Telemetry.install/1` documentation for event handler configuration.
+See `Spandex.Telemetry.install/1` documentation for event handler options.
 
 ### Usage: Plug & Phx < 1.5
 
