@@ -5,6 +5,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.0.0](https://github.com/spandex-project/spandex_phoenix/compare/0.4.2...v1.0.0) (2020-07-01)
+### Breaking Changes:
+
+* Add Phx 1.5 Telemetry Handlers (#26)
+
+
+
 ## [v0.4.2](https://github.com/spandex-project/spandex_phoenix/compare/0.4.1...v0.4.2) (2020-5-26)
 
 ### Bug Fixes:
