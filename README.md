@@ -26,6 +26,33 @@ Configure it to use your desired `Spandex.Tracer` module in `config.exs`:
 config :spandex_phoenix, tracer: MyApp.Tracer
 ```
 
+### Usage: Phx >= 1.5 (Telemetry)
+
+**Upgrade Note**: *If you're updating your SpandexPhoenix code from using it with previous versions of Pheonix,
+you must first remove all the code detailed in `Usage: Plug & Phx < 1.5` before following
+telemetry installation instructions below.*
+
+
+SpandexPhoenix supports using Phoenix 1.5's Telemetry events to create spans for
+`Phoenix.Controller` timing, with the `resource` name set to the controller action.
+
+To attach `Spandex.Telemetry`'s event handlers, call `Spandex.Telemetry.install/{0,1}`
+during your application's startup:
+
+```elixir
+defmodule MyApp.Application do
+  def start(_, _) do
+    # ...
+    SpandexPhoenix.Telemetry.install()
+    # ...
+  end
+end
+```
+
+See `Spandex.Telemetry.install/1` documentation for event handler options.
+
+### Usage: Plug & Phx < 1.5
+
 Add `use SpandexPhoenix` to the appropriate module. This will "wrap" the
 module with tracing and error-reporting via Spandex.
 
@@ -40,7 +67,7 @@ defmodule MyAppWeb.Endpoint do
 end
 ```
 
-If you use Phoenix, you don't need to use the following integration most likely, otherwise, you get the error messages like 
+If you use Phoenix, you don't need to use the following integration most likely, otherwise, you get the error messages like
 ```
 [error] Tried to start a trace over top of another trace
 ```
@@ -55,12 +82,12 @@ defmodule MyApp.Router do
 end
 ```
 
-### Customizing Traces
+#### Customizing Traces
 
-Traces can be customized and filtered by passing options to the `use SpandexPhoenix` macro. 
+Traces can be customized and filtered by passing options to the `use SpandexPhoenix` macro.
 See the [documentation for SpandexPhoenix] for more information.
 
-## Integrating with Phoenix Instrumentation
+#### Integrating with Phoenix Instrumentation
 
 If you are using Phoenix and you configure `SpandexPhoenix.Instrumenter` in
 your Phoenix `instrumenters` list, you will automatically get spans created for
