@@ -108,6 +108,8 @@ defmodule SpandexPhoenix do
       Default: `&SpandexPhoenix.default_metadata/1`
   """
 
+  alias Spandex.SpanContext
+
   alias SpandexPhoenix.Plug.{
     AddContext,
     FinishTrace,

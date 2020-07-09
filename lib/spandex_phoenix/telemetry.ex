@@ -79,10 +79,10 @@ defmodule SpandexPhoenix.Telemetry do
     :telemetry.attach_many("spandex-router-telemetry", router_events, &__MODULE__.handle_router_event/4, opts)
   end
 
-  def handle_endpoint_event(event, _, %{conn: conn}, config) do
+  def handle_endpoint_event(event, _, %{conn: conn}, %{tracer: tracer} = config) do
     case List.last(event) do
       :start -> start_trace(tracer, conn, config)
-      :stop -> finisn_trace(tracer, conn, config)
+      :stop -> finish_trace(tracer, conn, config)
     end
   end
 
@@ -111,7 +111,7 @@ defmodule SpandexPhoenix.Telemetry do
     # It's possible the router handed this request to a non-controller plug;
     # we only handle controller actions though, which is what the `is_atom` clauses are testing for
     if tracer.current_trace_id() and is_atom(meta[:plug]) and is_atom(meta[:plug_opts]) do
-      tracer.start_span(span_name, resource: "#{meta.plug}.#{meta.plug_opts}")
+      tracer.start_span("phx.router_dispatch", resource: "#{meta.plug}.#{meta.plug_opts}")
     end
   end
 

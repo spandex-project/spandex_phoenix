@@ -3,8 +3,6 @@ defmodule SpandexPhoenix.Plug.StartTrace do
 
   @behaviour Plug
 
-  alias Spandex.SpanContext
-
   @init_opts Optimal.schema(
                opts: [
                  filter_traces: {:function, 1},
