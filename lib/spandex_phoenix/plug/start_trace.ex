@@ -12,7 +12,7 @@ defmodule SpandexPhoenix.Plug.StartTrace do
                  tracer: :atom
                ],
                defaults: [
-                 filter_traces: &__MODULE__.trace_all_requests/1,
+                 filter_traces: &SpandexPhoenix.trace_all_requests/1,
                  span_name: "request",
                  tracer: Application.get_env(:spandex_phoenix, :tracer)
                ],
@@ -31,30 +31,10 @@ defmodule SpandexPhoenix.Plug.StartTrace do
 
   @impl Plug
   def call(conn, opts) do
-    if opts[:filter_traces].(conn) do
-      begin_tracing(conn, opts)
-    else
-      conn
-    end
+    SpandexPhoenix.trace_request(conn, opts)
   end
 
-  @spec trace_all_requests(Plug.Conn.t()) :: true
-  @doc "Default implementation of the filter_traces function"
-  def trace_all_requests(_conn), do: true
-
-  # Private Helpers
-
-  defp begin_tracing(conn, opts) do
-    tracer = opts[:tracer]
-
-    case tracer.distributed_context(conn) do
-      {:ok, %SpanContext{} = span_context} ->
-        tracer.continue_trace(opts[:span_name], span_context)
-
-      {:error, _} ->
-        tracer.start_trace(opts[:span_name])
-    end
-
-    conn
-  end
+  # for backwards compatibility
+  @doc false
+  defdelegate trace_all_requests(conn), to: SpandexPhoenix
 end
