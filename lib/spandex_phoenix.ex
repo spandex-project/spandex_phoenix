@@ -252,8 +252,6 @@ defmodule SpandexPhoenix do
   # Phoenix doesn't set the plug_route for us, so we have to figure it out ourselves
   defp route_name(%Plug.Conn{path_params: path_params, request_path: request_path}) do
     path = URI.decode(request_path)
-
-    path_params
-    |> Enum.reduce(path, fn {param, value}, acc -> String.replace(acc, value, ":#{param}") end)
+    Enum.reduce(path_params, path, fn {param, value}, acc -> String.replace(acc, value, ":#{param}") end)
   end
 end
