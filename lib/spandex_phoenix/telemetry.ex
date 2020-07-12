@@ -87,6 +87,7 @@ defmodule SpandexPhoenix.Telemetry do
 
   def handle_endpoint_event(event, _, %{conn: conn}, %{tracer: tracer} = config) do
     Logger.info("Endpoint event")
+
     case List.last(event) do
       :start -> start_trace(tracer, conn, config)
       :stop -> finish_trace(tracer, conn, config)
@@ -122,8 +123,6 @@ defmodule SpandexPhoenix.Telemetry do
     if tracer.current_trace_id() && phx_controller?(meta) do
       Logger.info("router start: span controller")
       tracer.start_span("phx.router_dispatch", resource: "#{meta.plug}.#{meta.plug_opts}")
-    else
-      Logger.error("router start: no trace. controller?=#{inspect(phx_controller?(meta))}")
     end
   end
 
@@ -131,8 +130,6 @@ defmodule SpandexPhoenix.Telemetry do
     if tracer.current_trace_id() do
       Logger.info("router stop: finish span")
       tracer.finish_span()
-    else
-      Logger.error("router stop: no trace")
     end
   end
 
@@ -147,9 +144,6 @@ defmodule SpandexPhoenix.Telemetry do
 
       # @TODO unclear if traces need to be finished here, or if they'll still hit endpoint stop?
       finish_trace(tracer, meta.conn, config)
-    else
-      Logger.error("router exception: no trace")
-
     end
   end
 
