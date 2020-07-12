@@ -28,6 +28,12 @@ defmodule SpandexPhoenix.Telemetry do
 
       Default: :phoenix
 
+  * `:type` (`Atom`)
+
+      The type for the service.
+
+      Default: :web
+
   * `:filter_traces` (`fun((Plug.Conn.t()) -> boolean)`)
 
       A function that takes a conn and returns true if a trace should be created
@@ -58,6 +64,7 @@ defmodule SpandexPhoenix.Telemetry do
     {endpoint_prefix, opts} = Keyword.pop(opts, :endpoint_telemetry_prefix, [:phoenix, :endpoint])
     {span_name, opts} = Keyword.pop(opts, :span_name, "request")
     {service, opts} = Keyword.pop(opts, :service, :phoenix)
+    {type, opts} = Keyword.pop(opts, :type, :web)
 
     {tracer, opts} =
       Keyword.pop_lazy(opts, :tracer, fn ->
@@ -77,7 +84,8 @@ defmodule SpandexPhoenix.Telemetry do
       filter_traces: filter_traces,
       service: service,
       span_name: span_name,
-      tracer: tracer
+      tracer: tracer,
+      type: type
     }
 
     endpoint_events = [
@@ -127,13 +135,16 @@ defmodule SpandexPhoenix.Telemetry do
     end
   end
 
-  defp start_trace(tracer, conn, %{span_name: span_name, service: service}) do
+  defp start_trace(tracer, conn, config) do
+    %{span_name: span_name, service: service, type: type} = config
+    span_opts = [service: service, type: type]
+
     case tracer.distributed_context(conn) do
       {:ok, %SpanContext{} = span} ->
-        tracer.continue_trace(span_name, span, service: service)
+        tracer.continue_trace(span_name, span, span_opts)
 
       {:error, _} ->
-        tracer.start_trace(span_name, service: service)
+        tracer.start_trace(span_name, span_opts)
     end
   end
 
