@@ -12,7 +12,7 @@ defmodule SpandexPhoenix.Plug.StartTrace do
                  tracer: :atom
                ],
                defaults: [
-                 filter_traces: &__MODULE__.trace_all_requests/1,
+                 filter_traces: &SpandexPhoenix.trace_all_requests/1,
                  span_name: "request",
                  tracer: Application.get_env(:spandex_phoenix, :tracer)
                ],
@@ -38,9 +38,9 @@ defmodule SpandexPhoenix.Plug.StartTrace do
     end
   end
 
-  @spec trace_all_requests(Plug.Conn.t()) :: true
-  @doc "Default implementation of the filter_traces function"
-  def trace_all_requests(_conn), do: true
+  # for backwards compatibility
+  @doc false
+  defdelegate trace_all_requests(conn), to: SpandexPhoenix
 
   # Private Helpers
 

@@ -205,6 +205,10 @@ defmodule SpandexPhoenix do
     ]
   end
 
+  @spec trace_all_requests(Plug.Conn.t()) :: true
+  @doc "Default implementation of the filter_traces function"
+  def trace_all_requests(_conn), do: true
+
   @already_sent {:plug_conn, :sent}
 
   @doc false
@@ -235,16 +239,17 @@ defmodule SpandexPhoenix do
     :erlang.raise(kind, reason, stack)
   end
 
-  # Private Helpers
-
-  defp mark_span_as_error(tracer, %{__struct__: Phoenix.Router.NoRouteError, __exception__: true}, _stack) do
+  @doc false
+  def mark_span_as_error(tracer, %{__struct__: Phoenix.Router.NoRouteError, __exception__: true}, _stack) do
     tracer.update_span(resource: "Not Found")
   end
 
-  defp mark_span_as_error(tracer, exception, stack) do
+  def mark_span_as_error(tracer, exception, stack) do
     tracer.span_error(exception, stack)
     tracer.update_span(error: [error?: true])
   end
+
+  # Private Helpers
 
   # Set by Plug.Router
   defp route_name(%Plug.Conn{private: %{plug_route: {route, _fn}}}), do: route
