@@ -5,6 +5,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.0.1](https://github.com/spandex-project/spandex_phoenix/compare/1.0.0...v1.0.1) (2020-07-12)
+
+
+
+
+### Bug Fixes:
+
+* support phx 1.5 properly
+
 ## [v1.0.0](https://github.com/spandex-project/spandex_phoenix/compare/0.4.2...v1.0.0) (2020-07-01)
 ### Breaking Changes:
 
