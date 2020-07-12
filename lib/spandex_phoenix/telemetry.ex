@@ -40,7 +40,7 @@ defmodule SpandexPhoenix.Telemetry do
       A list of span options to pass during the creation or continuation of
       the top level span.
 
-      Default: `[service: :phoenix, type: :web]`
+      Default: `[type: :web]`
 
   * `:customize_metadata` (`fun((Plug.Conn.t()) -> Keyword.t())`)
 
@@ -58,7 +58,7 @@ defmodule SpandexPhoenix.Telemetry do
     {customize_metadata, opts} = Keyword.pop(opts, :customize_metadata, &SpandexPhoenix.default_metadata/1)
     {endpoint_prefix, opts} = Keyword.pop(opts, :endpoint_telemetry_prefix, [:phoenix, :endpoint])
     {span_name, opts} = Keyword.pop(opts, :span_name, "request")
-    {span_opts, opts} = Keyword.pop(opts, :span_opts, [service: :phoenix, type: :web])
+    {span_opts, opts} = Keyword.pop(opts, :span_opts, [type: :web])
 
     {tracer, opts} =
       Keyword.pop_lazy(opts, :tracer, fn ->
