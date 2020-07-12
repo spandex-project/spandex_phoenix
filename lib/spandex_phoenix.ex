@@ -209,7 +209,6 @@ defmodule SpandexPhoenix do
   @doc "Default implementation of the filter_traces function"
   def trace_all_requests(_conn), do: true
 
-
   @already_sent {:plug_conn, :sent}
 
   @doc false

@@ -64,7 +64,7 @@ defmodule SpandexPhoenix.Telemetry do
     {customize_metadata, opts} = Keyword.pop(opts, :customize_metadata, &SpandexPhoenix.default_metadata/1)
     {endpoint_prefix, opts} = Keyword.pop(opts, :endpoint_telemetry_prefix, [:phoenix, :endpoint])
     {span_name, opts} = Keyword.pop(opts, :span_name, "request")
-    {span_opts, opts} = Keyword.pop(opts, :span_opts, [type: :web])
+    {span_opts, opts} = Keyword.pop(opts, :span_opts, type: :web)
 
     {tracer, opts} =
       Keyword.pop_lazy(opts, :tracer, fn ->
@@ -84,7 +84,7 @@ defmodule SpandexPhoenix.Telemetry do
       filter_traces: filter_traces,
       span_name: span_name,
       span_opts: span_opts,
-      tracer: tracer,
+      tracer: tracer
     }
 
     endpoint_events = [
