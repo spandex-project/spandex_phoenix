@@ -68,7 +68,7 @@ defmodule SpandexPhoenix.Telemetry do
       endpoint_prefix ++ [:stop]
     ]
 
-    :telemetry.attach_many("spandex-endpoint-telemetry", endpoint_events, &__MODULE__.handle_endpoint_event/4, opts)
+    :telemetry.attach_many("spandex-endpoint-telemetry", endpoint_events, &handle_endpoint_event/4, opts)
 
     router_events = [
       [:phoenix, :router_dispatch, :start],
@@ -76,10 +76,10 @@ defmodule SpandexPhoenix.Telemetry do
       [:phoenix, :router_dispatch, :exception]
     ]
 
-    :telemetry.attach_many("spandex-router-telemetry", router_events, &__MODULE__.handle_router_event/4, opts)
+    :telemetry.attach_many("spandex-router-telemetry", router_events, &handle_router_event/4, opts)
   end
 
-  def handle_endpoint_event(event, _, %{conn: conn}, %{tracer: tracer} = config) do
+  defp handle_endpoint_event(event, _, %{conn: conn}, %{tracer: tracer} = config) do
     case List.last(event) do
       :start -> start_trace(tracer, conn, config)
       :stop -> finish_trace(tracer, conn, config)
@@ -102,7 +102,7 @@ defmodule SpandexPhoenix.Telemetry do
       |> customize_metadata.()
       |> tracer.update_top_span()
 
-      tracer.finish_trace()
+      tracer.finish_trace([])
     end
   end
 
