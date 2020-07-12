@@ -1,6 +1,8 @@
 defmodule SpandexPhoenix.Telemetry do
   @moduledoc """
   Defines the `:telemetry` handlers to attach tracing to Phoenix Telemetry.
+
+  See `install/1` documentation for usage.
   """
 
   alias Spandex.SpanContext
@@ -8,19 +10,23 @@ defmodule SpandexPhoenix.Telemetry do
   @doc """
   Installs `:telemetry` event handlers for Phoenix Telemetry events.
 
+  `Plug.Telemetry` must be included in your endpoint or router for traces to
+  function properly. If you upgraded to Phoenix 1.5, you must add the plug yourself.
+  The Phoenix 1.5 installer includes the plug in your endpoint automatically.
+
   ### Options
-
-  * `:endpoint_telemetry_prefix` (`Atom`)
-
-      The telemetry prefix passed to `Plug.Telemetry` in the endpoint you want to trace.
-
-      Default: `[:phoenix, :endpoint]`
 
   * `:tracer` (`Atom`)
 
       The tracing module to be used for traces in your Endpoint.
 
       Default: `Application.get_env(:spandex_phoenix, :tracer)`
+
+  * `:endpoint_telemetry_prefix` (`Atom`)
+
+      The telemetry prefix passed to `Plug.Telemetry` in the endpoint you want to trace.
+
+      Default: `[:phoenix, :endpoint]`
 
   * `:filter_traces` (`fun((Plug.Conn.t()) -> boolean)`)
 
