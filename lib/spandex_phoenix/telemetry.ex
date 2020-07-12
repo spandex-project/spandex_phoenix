@@ -22,18 +22,6 @@ defmodule SpandexPhoenix.Telemetry do
 
       Default: `Application.get_env(:spandex_phoenix, :tracer)`
 
-  * `:service` (`Atom`)
-
-      The service to report for the top level span.
-
-      Default: :phoenix
-
-  * `:type` (`Atom`)
-
-      The type for the service.
-
-      Default: :web
-
   * `:filter_traces` (`fun((Plug.Conn.t()) -> boolean)`)
 
       A function that takes a conn and returns true if a trace should be created
@@ -46,6 +34,13 @@ defmodule SpandexPhoenix.Telemetry do
       The name for the span this module creates.
 
       Default: `"request"`
+
+  * `:span_opts` (`Spandex.Tracer.opts()`)
+
+      A list of span options to pass during the creation or continuation of
+      the top level span.
+
+      Default: `[service: :phoenix, type: :web]`
 
   * `:customize_metadata` (`fun((Plug.Conn.t()) -> Keyword.t())`)
 
@@ -63,8 +58,7 @@ defmodule SpandexPhoenix.Telemetry do
     {customize_metadata, opts} = Keyword.pop(opts, :customize_metadata, &SpandexPhoenix.default_metadata/1)
     {endpoint_prefix, opts} = Keyword.pop(opts, :endpoint_telemetry_prefix, [:phoenix, :endpoint])
     {span_name, opts} = Keyword.pop(opts, :span_name, "request")
-    {service, opts} = Keyword.pop(opts, :service, :phoenix)
-    {type, opts} = Keyword.pop(opts, :type, :web)
+    {span_opts, opts} = Keyword.pop(opts, :span_opts, [service: :phoenix, type: :web])
 
     {tracer, opts} =
       Keyword.pop_lazy(opts, :tracer, fn ->
@@ -82,10 +76,9 @@ defmodule SpandexPhoenix.Telemetry do
     opts = %{
       customize_metadata: customize_metadata,
       filter_traces: filter_traces,
-      service: service,
       span_name: span_name,
+      span_opts: span_opts,
       tracer: tracer,
-      type: type
     }
 
     endpoint_events = [
@@ -135,16 +128,13 @@ defmodule SpandexPhoenix.Telemetry do
     end
   end
 
-  defp start_trace(tracer, conn, config) do
-    %{span_name: span_name, service: service, type: type} = config
-    span_opts = [service: service, type: type]
-
+  defp start_trace(tracer, conn, %{span_name: name, span_opts: opts}) do
     case tracer.distributed_context(conn) do
       {:ok, %SpanContext{} = span} ->
-        tracer.continue_trace(span_name, span, span_opts)
+        tracer.continue_trace(name, span, opts)
 
       {:error, _} ->
-        tracer.start_trace(span_name, span_opts)
+        tracer.start_trace(name, opts)
     end
   end
 
