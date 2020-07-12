@@ -87,12 +87,12 @@ defmodule SpandexPhoenix.Telemetry do
   end
 
   defp start_trace(tracer, conn, %{span_name: span_name}) do
-    case tracer.distributed_context(conn, []) do
+    case tracer.distributed_context(conn) do
       {:ok, %SpanContext{} = span} ->
-        tracer.continue_trace(span_name, span, [])
+        tracer.continue_trace(span_name, span)
 
       {:error, _} ->
-        tracer.start_trace(span_name, [])
+        tracer.start_trace(span_name)
     end
   end
 
@@ -102,7 +102,7 @@ defmodule SpandexPhoenix.Telemetry do
       |> customize_metadata.()
       |> tracer.update_top_span()
 
-      tracer.finish_trace([])
+      tracer.finish_trace()
     end
   end
 
