@@ -108,8 +108,6 @@ defmodule SpandexPhoenix do
       Default: `&SpandexPhoenix.default_metadata/1`
   """
 
-  alias Spandex.SpanContext
-
   alias SpandexPhoenix.Plug.{
     AddContext,
     FinishTrace,
@@ -211,6 +209,7 @@ defmodule SpandexPhoenix do
   @doc "Default implementation of the filter_traces function"
   def trace_all_requests(_conn), do: true
 
+
   @already_sent {:plug_conn, :sent}
 
   @doc false
@@ -239,23 +238,6 @@ defmodule SpandexPhoenix do
     mark_span_as_error(tracer, exception, stack)
     FinishTrace.call(conn, finish_opts)
     :erlang.raise(kind, reason, stack)
-  end
-
-  @doc false
-  def trace_request(conn, opts) do
-    %{tracer: tracer, filter_traces: filter_traces, span_name: span_name} = opts
-
-    if filter_traces.(conn) do
-      case tracer.distributed_context(conn) do
-        {:ok, %SpanContext{} = span_context} ->
-          tracer.continue_trace(span_name, span_context)
-
-        {:error, _} ->
-          tracer.start_trace(span_name)
-      end
-
-      conn
-    end
   end
 
   @doc false

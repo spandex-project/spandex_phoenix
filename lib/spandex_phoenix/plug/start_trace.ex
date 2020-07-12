@@ -3,6 +3,8 @@ defmodule SpandexPhoenix.Plug.StartTrace do
 
   @behaviour Plug
 
+  alias Spandex.SpanContext
+
   @init_opts Optimal.schema(
                opts: [
                  filter_traces: {:function, 1},
@@ -29,10 +31,30 @@ defmodule SpandexPhoenix.Plug.StartTrace do
 
   @impl Plug
   def call(conn, opts) do
-    SpandexPhoenix.trace_request(conn, opts)
+    if opts[:filter_traces].(conn) do
+      begin_tracing(conn, opts)
+    else
+      conn
+    end
   end
 
   # for backwards compatibility
   @doc false
   defdelegate trace_all_requests(conn), to: SpandexPhoenix
+
+  # Private Helpers
+
+  defp begin_tracing(conn, opts) do
+    tracer = opts[:tracer]
+
+    case tracer.distributed_context(conn) do
+      {:ok, %SpanContext{} = span_context} ->
+        tracer.continue_trace(opts[:span_name], span_context)
+
+      {:error, _} ->
+        tracer.start_trace(opts[:span_name])
+    end
+
+    conn
+  end
 end
