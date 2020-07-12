@@ -49,18 +49,22 @@ defmodule SpandexPhoenix.Telemetry do
               "Did you mean to use the Phoenix Instrumenters integration instead?"
     end
 
-    filter_traces = Keyword.get(opts, :filter_traces, &SpandexPhoenix.trace_all_requests/1)
-    customize_metadata = Keyword.get(opts, :customize_metadata, &SpandexPhoenix.default_metadata/1)
-    endpoint_prefix = Keyword.get(opts, :endpoint_telemetry_prefix, [:phoenix, :endpoint])
-    span_name = Keyword.get(opts, :span_name, "request")
+    {filter_traces, opts} = Keyword.pop(opts, :filter_traces, &SpandexPhoenix.trace_all_requests/1)
+    {customize_metadata, opts} = Keyword.pop(opts, :customize_metadata, &SpandexPhoenix.default_metadata/1)
+    {endpoint_prefix, opts} = Keyword.pop(opts, :endpoint_telemetry_prefix, [:phoenix, :endpoint])
+    {span_name, opts} = Keyword.pop(opts, :span_name, "request")
 
-    tracer =
-      Keyword.get_lazy(opts, :tracer, fn ->
+    {tracer, opts} =
+      Keyword.pop_lazy(opts, :tracer, fn ->
         Application.get_env(:spandex_phoenix, :tracer)
       end)
 
     unless tracer do
       raise ArgumentError, "`:tracer` option must be provided or configured in `:spandex_phoenix`"
+    end
+
+    unless Enum.empty?(opts) do
+      raise ArgumentError, "Unknown options: #{inspect(Keyword.keys(opts))}"
     end
 
     opts = %{tracer: tracer, filter_traces: filter_traces, customize_metadata: customize_metadata, span_name: span_name}
@@ -70,7 +74,7 @@ defmodule SpandexPhoenix.Telemetry do
       endpoint_prefix ++ [:stop]
     ]
 
-    :telemetry.attach_many("spandex-endpoint-telemetry", endpoint_events, &handle_endpoint_event/4, opts)
+    :telemetry.attach_many("spandex-endpoint-telemetry", endpoint_events, &__MODULE__.handle_endpoint_event/4, opts)
 
     router_events = [
       [:phoenix, :router_dispatch, :start],
@@ -78,10 +82,10 @@ defmodule SpandexPhoenix.Telemetry do
       [:phoenix, :router_dispatch, :exception]
     ]
 
-    :telemetry.attach_many("spandex-router-telemetry", router_events, &handle_router_event/4, opts)
+    :telemetry.attach_many("spandex-router-telemetry", router_events, &__MODULE__.handle_router_event/4, opts)
   end
 
-  defp handle_endpoint_event(event, _, %{conn: conn}, %{tracer: tracer} = config) do
+  def handle_endpoint_event(event, _, %{conn: conn}, %{tracer: tracer} = config) do
     Logger.info("Endpoint event")
     case List.last(event) do
       :start -> start_trace(tracer, conn, config)
