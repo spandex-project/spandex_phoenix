@@ -5,6 +5,8 @@ defmodule SpandexPhoenix.Telemetry do
 
   alias Spandex.SpanContext
 
+  require Logger
+
   @doc """
   Installs `:telemetry` event handlers for Phoenix Telemetry events.
 
@@ -80,6 +82,7 @@ defmodule SpandexPhoenix.Telemetry do
   end
 
   defp handle_endpoint_event(event, _, %{conn: conn}, %{tracer: tracer} = config) do
+    Logger.info("Endpoint event")
     case List.last(event) do
       :start -> start_trace(tracer, conn, config)
       :stop -> finish_trace(tracer, conn, config)
@@ -89,9 +92,11 @@ defmodule SpandexPhoenix.Telemetry do
   defp start_trace(tracer, conn, %{span_name: span_name}) do
     case tracer.distributed_context(conn) do
       {:ok, %SpanContext{} = span} ->
+        Logger.info("start trace: continue")
         tracer.continue_trace(span_name, span)
 
       {:error, _} ->
+        Logger.info("start trace: start")
         tracer.start_trace(span_name)
     end
   end
@@ -111,13 +116,19 @@ defmodule SpandexPhoenix.Telemetry do
     # It's possible the router handed this request to a non-controller plug;
     # we only handle controller actions though, which is what the `is_atom` clauses are testing for
     if tracer.current_trace_id() && phx_controller?(meta) do
+      Logger.info("router start: span controller")
       tracer.start_span("phx.router_dispatch", resource: "#{meta.plug}.#{meta.plug_opts}")
+    else
+      Logger.error("router start: no trace. controller?=#{inspect(phx_controller?(meta))}")
     end
   end
 
   def handle_router_event([_, _, :stop], _, _, %{tracer: tracer}) do
     if tracer.current_trace_id() do
+      Logger.info("router stop: finish span")
       tracer.finish_span()
+    else
+      Logger.error("router stop: no trace")
     end
   end
 
@@ -127,10 +138,14 @@ defmodule SpandexPhoenix.Telemetry do
     error = meta[:reason] || meta[:error]
 
     if tracer.current_trace_id() do
+      Logger.warn("router exception: mark error")
       SpandexPhoenix.mark_span_as_error(tracer, error, meta.stack_trace)
 
       # @TODO unclear if traces need to be finished here, or if they'll still hit endpoint stop?
       finish_trace(tracer, meta.conn, config)
+    else
+      Logger.error("router exception: no trace")
+
     end
   end
 
