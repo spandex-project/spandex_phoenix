@@ -26,7 +26,7 @@ defmodule SpandexPhoenix.Telemetry do
 
       The service to report for the top level span.
 
-      Default: the service configured for your tracer.
+      Default: :phoenix
 
   * `:filter_traces` (`fun((Plug.Conn.t()) -> boolean)`)
 
@@ -57,6 +57,7 @@ defmodule SpandexPhoenix.Telemetry do
     {customize_metadata, opts} = Keyword.pop(opts, :customize_metadata, &SpandexPhoenix.default_metadata/1)
     {endpoint_prefix, opts} = Keyword.pop(opts, :endpoint_telemetry_prefix, [:phoenix, :endpoint])
     {span_name, opts} = Keyword.pop(opts, :span_name, "request")
+    {service, opts} = Keyword.pop(opts, :service, :phoenix)
 
     {tracer, opts} =
       Keyword.pop_lazy(opts, :tracer, fn ->
@@ -71,7 +72,13 @@ defmodule SpandexPhoenix.Telemetry do
       raise ArgumentError, "Unknown options: #{inspect(Keyword.keys(opts))}"
     end
 
-    opts = %{tracer: tracer, filter_traces: filter_traces, customize_metadata: customize_metadata, span_name: span_name}
+    opts = %{
+      customize_metadata: customize_metadata,
+      filter_traces: filter_traces,
+      service: service,
+      span_name: span_name,
+      tracer: tracer
+    }
 
     endpoint_events = [
       endpoint_prefix ++ [:start],
@@ -96,52 +103,50 @@ defmodule SpandexPhoenix.Telemetry do
     end
   end
 
-  defp start_trace(tracer, conn, %{span_name: span_name}) do
-    case tracer.distributed_context(conn) do
-      {:ok, %SpanContext{} = span} ->
-        tracer.continue_trace(span_name, span)
-
-      {:error, _} ->
-        tracer.start_trace(span_name)
-    end
-  end
-
-  defp finish_trace(tracer, conn, %{customize_metadata: customize_metadata}) do
-    if tracer.current_trace_id() do
-      conn
-      |> customize_metadata.()
-      |> tracer.update_top_span()
-
-      tracer.finish_trace()
-    end
-  end
-
   @doc false
-  def handle_router_event([_, _, :start], _, meta, %{tracer: tracer}) do
-    # It's possible the router handed this request to a non-controller plug;
-    # we only handle controller actions though, which is what the `is_atom` clauses are testing for
-    if tracer.current_trace_id() && phx_controller?(meta) do
+  def handle_router_event([:phoenix, :router_dispatch, :start], _, meta, %{tracer: tracer}) do
+    if phx_controller?(meta) do
       tracer.start_span("phx.router_dispatch", resource: "#{meta.plug}.#{meta.plug_opts}")
     end
   end
 
-  def handle_router_event([_, _, :stop], _, _, %{tracer: tracer}) do
-    if tracer.current_trace_id() do
+  def handle_router_event([:phoenix, :router_dispatch, :stop], _, meta, %{tracer: tracer}) do
+    if phx_controller?(meta) do
       tracer.finish_span()
     end
   end
 
-  def handle_router_event([_, _, :exception], _, meta, %{tracer: tracer} = config) do
+  def handle_router_event([:phoenix, :router_dispatch, :exception], _, meta, %{tracer: tracer} = config) do
     # phx 1.5.4-dev has a breaking change that switches `:error` to `:reason`
     # maybe they'll see "reason" and keep using the old key too, but for now here's this
     error = meta[:reason] || meta[:error]
 
-    if tracer.current_trace_id() do
+    if phx_controller?(meta) do
       SpandexPhoenix.mark_span_as_error(tracer, error, meta.stack_trace)
       finish_trace(tracer, meta.conn, config)
     end
   end
 
+  defp start_trace(tracer, conn, %{span_name: span_name, service: service}) do
+    case tracer.distributed_context(conn) do
+      {:ok, %SpanContext{} = span} ->
+        tracer.continue_trace(span_name, span, service: service)
+
+      {:error, _} ->
+        tracer.start_trace(span_name, service: service)
+    end
+  end
+
+  defp finish_trace(tracer, conn, %{customize_metadata: customize_metadata}) do
+    conn
+    |> customize_metadata.()
+    |> tracer.update_top_span()
+
+    tracer.finish_trace()
+  end
+
+  # It's possible the router handed this request to a non-controller plug;
+  # we only handle controller actions though, which is what the `is_atom` clauses are testing for
   defp phx_controller?(meta) do
     is_atom(meta[:plug]) and is_atom(meta[:plug_opts])
   end
