@@ -5,6 +5,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.0.2](https://github.com/spandex-project/spandex_phoenix/compare/1.0.1...v1.0.2) (2020-07-13)
+
+
+
+
+### Bug Fixes:
+
+* Allow traces to be filtered in telemetry (#33)
+
 ## [v1.0.1](https://github.com/spandex-project/spandex_phoenix/compare/1.0.0...v1.0.1) (2020-07-12)
 
 
