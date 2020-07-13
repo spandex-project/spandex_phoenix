@@ -128,11 +128,11 @@ defmodule SpandexPhoenix.Telemetry do
   end
 
   def handle_router_event([:phoenix, :router_dispatch, :exception], _, meta, %{tracer: tracer} = config) do
-    # phx 1.5.4-dev has a breaking change that switches `:error` to `:reason`
-    # maybe they'll see "reason" and keep using the old key too, but for now here's this
-    error = meta[:reason] || meta[:error]
-
-    if phx_controller?(meta) do
+    # because we close a trace here, we need to make sure we're not on one that's being filtered.
+    if config.filter_traces.(conn) && phx_controller?(meta) do
+      # phx 1.5.4-dev has a breaking change that switches `:error` to `:reason`
+      # maybe they'll see "reason" and keep using the old key too, but for now here's this
+      error = meta[:reason] || meta[:error]
       SpandexPhoenix.mark_span_as_error(tracer, error, meta.stacktrace)
       finish_trace(tracer, meta.conn, config)
     end
