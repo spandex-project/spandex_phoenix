@@ -104,9 +104,11 @@ defmodule SpandexPhoenix.Telemetry do
   end
 
   def handle_endpoint_event(event, _, %{conn: conn}, %{tracer: tracer} = config) do
-    case List.last(event) do
-      :start -> start_trace(tracer, conn, config)
-      :stop -> finish_trace(tracer, conn, config)
+    if config.filter_traces(conn) do
+      case List.last(event) do
+        :start -> start_trace(tracer, conn, config)
+        :stop -> finish_trace(tracer, conn, config)
+      end
     end
   end
 
