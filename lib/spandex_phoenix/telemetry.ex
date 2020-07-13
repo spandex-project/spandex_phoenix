@@ -103,8 +103,10 @@ defmodule SpandexPhoenix.Telemetry do
     :telemetry.attach_many("spandex-router-telemetry", router_events, &__MODULE__.handle_router_event/4, opts)
   end
 
-  def handle_endpoint_event(event, _, %{conn: conn}, %{tracer: tracer} = config) do
-    if config.filter_traces.(conn) do
+  def handle_endpoint_event(event, _, %{conn: conn}, config) do
+    %{tracer: tracer, filter_traces: filter_traces} = config
+
+    if filter_traces.(conn) do
       case List.last(event) do
         :start -> start_trace(tracer, conn, config)
         :stop -> finish_trace(tracer, conn, config)
