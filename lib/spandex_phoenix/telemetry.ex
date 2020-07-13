@@ -104,7 +104,7 @@ defmodule SpandexPhoenix.Telemetry do
   end
 
   def handle_endpoint_event(event, _, %{conn: conn}, %{tracer: tracer} = config) do
-    if config.filter_traces(conn) do
+    if config.filter_traces.(conn) do
       case List.last(event) do
         :start -> start_trace(tracer, conn, config)
         :stop -> finish_trace(tracer, conn, config)
@@ -131,7 +131,7 @@ defmodule SpandexPhoenix.Telemetry do
     error = meta[:reason] || meta[:error]
 
     if phx_controller?(meta) do
-      SpandexPhoenix.mark_span_as_error(tracer, error, meta.stack_trace)
+      SpandexPhoenix.mark_span_as_error(tracer, error, meta.stacktrace)
       finish_trace(tracer, meta.conn, config)
     end
   end
