@@ -115,7 +115,7 @@ defmodule SpandexPhoenix.Telemetry do
 
   defp trace?(conn, %{filter_traces: filter_traces}), do: filter_traces.(conn)
 
-  defp start_trace(tracer, conn, %{span_name: name, span_opts: opts} = config) do
+  defp start_trace(tracer, conn, %{span_name: name, span_opts: opts}) do
     case tracer.distributed_context(conn) do
       {:ok, %SpanContext{} = span} ->
         tracer.continue_trace(name, span, opts)
@@ -125,7 +125,7 @@ defmodule SpandexPhoenix.Telemetry do
     end
   end
 
-  defp finish_trace(tracer, conn, %{customize_metadata: customize_metadata} = config) do
+  defp finish_trace(tracer, conn, %{customize_metadata: customize_metadata}) do
     conn
     |> customize_metadata.()
     |> tracer.update_top_span()
@@ -146,7 +146,7 @@ defmodule SpandexPhoenix.Telemetry do
     end
   end
 
-  def handle_router_event([:phoenix, :router_dispatch, :exception], _, meta, %{tracer: tracer} = config) do
+  def handle_router_event([:phoenix, :router_dispatch, :exception], _, meta, %{tracer: tracer}) do
     # phx 1.5.3 has a breaking change that switches `:error` to `:reason`
     error = meta[:reason] || meta[:error]
 
