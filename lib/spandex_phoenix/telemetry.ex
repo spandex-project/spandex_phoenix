@@ -105,10 +105,32 @@ defmodule SpandexPhoenix.Telemetry do
 
   @doc false
   def handle_endpoint_event(event, _, %{conn: conn}, %{tracer: tracer} = config) do
-    case List.last(event) do
-      :start -> start_trace(tracer, conn, config)
-      :stop -> finish_trace(tracer, conn, config)
+    if trace?(conn, config) do
+      case List.last(event) do
+        :start -> start_trace(tracer, conn, config)
+        :stop -> finish_trace(tracer, conn, config)
+      end
     end
+  end
+
+  defp trace?(conn, %{filter_traces: filter_traces}), do: filter_traces.(conn)
+
+  defp start_trace(tracer, conn, %{span_name: name, span_opts: opts} = config) do
+    case tracer.distributed_context(conn) do
+      {:ok, %SpanContext{} = span} ->
+        tracer.continue_trace(name, span, opts)
+
+      {:error, _} ->
+        tracer.start_trace(name, opts)
+    end
+  end
+
+  defp finish_trace(tracer, conn, %{customize_metadata: customize_metadata} = config) do
+    conn
+    |> customize_metadata.()
+    |> tracer.update_top_span()
+
+    tracer.finish_trace()
   end
 
   @doc false
@@ -125,35 +147,14 @@ defmodule SpandexPhoenix.Telemetry do
   end
 
   def handle_router_event([:phoenix, :router_dispatch, :exception], _, meta, %{tracer: tracer} = config) do
-    if phx_controller?(meta) do
-      # phx 1.5.4-dev has a breaking change that switches `:error` to `:reason`
-      # maybe they'll see "reason" and keep using the old key too, but for now here's this
-      error = meta[:reason] || meta[:error]
+    # phx 1.5.3 has a breaking change that switches `:error` to `:reason`
+    error = meta[:reason] || meta[:error]
+
+    # :phoenix :router_dispatch :exception has far fewer keys in its metadata
+    # (just `kind`, `error/reason`, and `stacktrace`)
+    # so we can't use `phx_controller?` or `filter_traces` to detect if we are tracing
+    if tracer.current_trace_id() do
       SpandexPhoenix.mark_span_as_error(tracer, error, meta.stacktrace)
-      finish_trace(tracer, meta.conn, config)
-    end
-  end
-
-  defp trace?(conn, %{filter_traces: filter_traces}), do: filter_traces.(conn)
-
-  defp start_trace(tracer, conn, %{span_name: name, span_opts: opts} = config) do
-    if trace?(conn, config) do
-      case tracer.distributed_context(conn) do
-        {:ok, %SpanContext{} = span} ->
-          tracer.continue_trace(name, span, opts)
-
-        {:error, _} ->
-          tracer.start_trace(name, opts)
-      end
-    end
-  end
-
-  defp finish_trace(tracer, conn, %{customize_metadata: customize_metadata = config) do
-    if trace?(conn, config) do
-      conn
-      |> customize_metadata.()
-      |> tracer.update_top_span()
-
       tracer.finish_trace()
     end
   end
