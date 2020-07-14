@@ -103,14 +103,11 @@ defmodule SpandexPhoenix.Telemetry do
     :telemetry.attach_many("spandex-router-telemetry", router_events, &__MODULE__.handle_router_event/4, opts)
   end
 
-  def handle_endpoint_event(event, _, %{conn: conn}, config) do
-    %{tracer: tracer, filter_traces: filter_traces} = config
-
-    if filter_traces.(conn) do
-      case List.last(event) do
-        :start -> start_trace(tracer, conn, config)
-        :stop -> finish_trace(tracer, conn, config)
-      end
+  @doc false
+  def handle_endpoint_event(event, _, %{conn: conn}, %{tracer: tracer} = config) do
+    case List.last(event) do
+      :start -> start_trace(tracer, conn, config)
+      :stop -> finish_trace(tracer, conn, config)
     end
   end
 
@@ -128,8 +125,7 @@ defmodule SpandexPhoenix.Telemetry do
   end
 
   def handle_router_event([:phoenix, :router_dispatch, :exception], _, meta, %{tracer: tracer} = config) do
-    # because we close a trace here, we need to make sure we're not on one that's being filtered.
-    if config.filter_traces.(conn) && phx_controller?(meta) do
+    if phx_controller?(meta) do
       # phx 1.5.4-dev has a breaking change that switches `:error` to `:reason`
       # maybe they'll see "reason" and keep using the old key too, but for now here's this
       error = meta[:reason] || meta[:error]
@@ -138,22 +134,28 @@ defmodule SpandexPhoenix.Telemetry do
     end
   end
 
-  defp start_trace(tracer, conn, %{span_name: name, span_opts: opts}) do
-    case tracer.distributed_context(conn) do
-      {:ok, %SpanContext{} = span} ->
-        tracer.continue_trace(name, span, opts)
+  defp trace?(conn, %{filter_traces: filter_traces}), do: filter_traces.(conn)
 
-      {:error, _} ->
-        tracer.start_trace(name, opts)
+  defp start_trace(tracer, conn, %{span_name: name, span_opts: opts} = config) do
+    if trace?(conn, config) do
+      case tracer.distributed_context(conn) do
+        {:ok, %SpanContext{} = span} ->
+          tracer.continue_trace(name, span, opts)
+
+        {:error, _} ->
+          tracer.start_trace(name, opts)
+      end
     end
   end
 
-  defp finish_trace(tracer, conn, %{customize_metadata: customize_metadata}) do
-    conn
-    |> customize_metadata.()
-    |> tracer.update_top_span()
+  defp finish_trace(tracer, conn, %{customize_metadata: customize_metadata = config) do
+    if trace?(conn, config) do
+      conn
+      |> customize_metadata.()
+      |> tracer.update_top_span()
 
-    tracer.finish_trace()
+      tracer.finish_trace()
+    end
   end
 
   # It's possible the router handed this request to a non-controller plug;
