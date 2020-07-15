@@ -103,8 +103,9 @@ defmodule SpandexPhoenix.Telemetry do
     :telemetry.attach_many("spandex-router-telemetry", router_events, &__MODULE__.handle_router_event/4, opts)
   end
 
+  @doc false
   def handle_endpoint_event(event, _, %{conn: conn}, %{tracer: tracer} = config) do
-    if config.filter_traces(conn) do
+    if trace?(conn, config) do
       case List.last(event) do
         :start -> start_trace(tracer, conn, config)
         :stop -> finish_trace(tracer, conn, config)
@@ -112,29 +113,7 @@ defmodule SpandexPhoenix.Telemetry do
     end
   end
 
-  @doc false
-  def handle_router_event([:phoenix, :router_dispatch, :start], _, meta, %{tracer: tracer}) do
-    if phx_controller?(meta) do
-      tracer.start_span("phx.router_dispatch", resource: "#{meta.plug}.#{meta.plug_opts}")
-    end
-  end
-
-  def handle_router_event([:phoenix, :router_dispatch, :stop], _, meta, %{tracer: tracer}) do
-    if phx_controller?(meta) do
-      tracer.finish_span()
-    end
-  end
-
-  def handle_router_event([:phoenix, :router_dispatch, :exception], _, meta, %{tracer: tracer} = config) do
-    # phx 1.5.4-dev has a breaking change that switches `:error` to `:reason`
-    # maybe they'll see "reason" and keep using the old key too, but for now here's this
-    error = meta[:reason] || meta[:error]
-
-    if phx_controller?(meta) do
-      SpandexPhoenix.mark_span_as_error(tracer, error, meta.stack_trace)
-      finish_trace(tracer, meta.conn, config)
-    end
-  end
+  defp trace?(conn, %{filter_traces: filter_traces}), do: filter_traces.(conn)
 
   defp start_trace(tracer, conn, %{span_name: name, span_opts: opts}) do
     case tracer.distributed_context(conn) do
@@ -152,6 +131,32 @@ defmodule SpandexPhoenix.Telemetry do
     |> tracer.update_top_span()
 
     tracer.finish_trace()
+  end
+
+  @doc false
+  def handle_router_event([:phoenix, :router_dispatch, :start], _, meta, %{tracer: tracer}) do
+    if phx_controller?(meta) do
+      tracer.start_span("phx.router_dispatch", resource: "#{meta.plug}.#{meta.plug_opts}")
+    end
+  end
+
+  def handle_router_event([:phoenix, :router_dispatch, :stop], _, meta, %{tracer: tracer}) do
+    if phx_controller?(meta) do
+      tracer.finish_span()
+    end
+  end
+
+  def handle_router_event([:phoenix, :router_dispatch, :exception], _, meta, %{tracer: tracer}) do
+    # phx 1.5.3 has a breaking change that switches `:error` to `:reason`
+    error = meta[:reason] || meta[:error]
+
+    # :phoenix :router_dispatch :exception has far fewer keys in its metadata
+    # (just `kind`, `error/reason`, and `stacktrace`)
+    # so we can't use `phx_controller?` or `filter_traces` to detect if we are tracing
+    if tracer.current_trace_id() do
+      SpandexPhoenix.mark_span_as_error(tracer, error, meta.stacktrace)
+      tracer.finish_trace()
+    end
   end
 
   # It's possible the router handed this request to a non-controller plug;
