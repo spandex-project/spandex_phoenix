@@ -5,6 +5,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.0.3](https://github.com/spandex-project/spandex_phoenix/compare/1.0.2...v1.0.3) (2020-07-15)
+
+
+
+
+### Bug Fixes:
+
+* filter traces
+
 ## [v1.0.2](https://github.com/spandex-project/spandex_phoenix/compare/1.0.1...v1.0.2) (2020-07-13)
 
 
