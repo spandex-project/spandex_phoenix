@@ -155,7 +155,7 @@ defmodule SpandexPhoenix.Telemetry do
     # so we can't use `phx_controller?` or `filter_traces` to detect if we are tracing
     if tracer.current_trace_id() do
       SpandexPhoenix.mark_span_as_error(tracer, error, meta.stacktrace)
-      tracer.finish_trace()
+      tracer.finish_span()
     end
   end
 
