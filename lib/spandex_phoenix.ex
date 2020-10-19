@@ -244,6 +244,9 @@ defmodule SpandexPhoenix do
     tracer.update_span(resource: "Not Found")
   end
 
+  def mark_span_as_error(_tracer, %{__struct__: Plug.Parsers.UnsupportedMediaTypeError, __exception__: true}, _stack),
+    do: nil
+
   def mark_span_as_error(tracer, exception, stack) do
     tracer.span_error(exception, stack)
     tracer.update_span(error: [error?: true])

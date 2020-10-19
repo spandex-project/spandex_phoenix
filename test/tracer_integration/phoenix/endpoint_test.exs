@@ -24,11 +24,17 @@ defmodule TracerWithPhoenixEndpointTest do
       throw("Test")
       text(conn, "Won't get here")
     end
+
+    def create(conn, _params), do: text(conn, "created")
   end
 
   defmodule ErrorView do
     def render("404.html", _) do
       "404 not found"
+    end
+
+    def render("415.html", _) do
+      "415 unsupported media type"
     end
 
     def render("500.html", %{kind: kind, reason: reason}) do
@@ -43,6 +49,24 @@ defmodule TracerWithPhoenixEndpointTest do
     get("/hello", Controller, :hello)
     get("/hello/:name", Controller, :hello)
     get("/throw", Controller, :throw)
+    post("/create", Controller, :create)
+  end
+
+  defmodule Parser do
+    @behaviour Plug
+
+    @impl Plug
+    def init(_opts), do: nil
+
+    @impl Plug
+    def call(conn, _opts) do
+      %{req_headers: req_headers} = conn
+
+      case List.keyfind(req_headers, "content-type", 0) do
+        {"content-type", ct} -> raise Plug.Parsers.UnsupportedMediaTypeError, media_type: ct
+        _ -> conn
+      end
+    end
   end
 
   # Just enough to make it work and eliminate warnings
@@ -51,6 +75,8 @@ defmodule TracerWithPhoenixEndpointTest do
   defmodule Endpoint do
     use Phoenix.Endpoint, otp_app: :spandex_phoenix
     use SpandexPhoenix
+
+    plug(Parser)
     plug(Router)
   end
 
@@ -216,6 +242,25 @@ defmodule TracerWithPhoenixEndpointTest do
       assert "GET" == Keyword.get(http, :method)
       assert 404 == Keyword.get(http, :status_code)
       assert "/not_found" == Keyword.get(http, :url)
+    end
+
+    test "doesn't mark as an error when Plug.Parsers raises UnsupportedMediaTypeError" do
+      assert_raise Plug.Parsers.UnsupportedMediaTypeError, fn ->
+        call(Endpoint, :post, "/create", content_type: "non/existent")
+      end
+
+      assert_receive {
+        :sent_trace,
+        %Spandex.Trace{
+          spans: [
+            %Spandex.Span{error: nil, http: http, name: "request", resource: "POST /create"}
+          ]
+        }
+      }
+
+      assert "POST" == Keyword.get(http, :method)
+      assert 415 == Keyword.get(http, :status_code)
+      assert "/create" == Keyword.get(http, :url)
     end
 
     test "allows customizing metadata" do
