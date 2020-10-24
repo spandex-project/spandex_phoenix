@@ -159,8 +159,7 @@ defmodule SpandexPhoenix do
             SpandexPhoenix.handle_errors(error, @tracer, @context_opts, @finish_opts)
         catch
           kind, reason ->
-            stack = System.stacktrace()
-            error = %{conn: conn, kind: kind, reason: reason, stack: stack}
+            error = %{conn: conn, kind: kind, reason: reason, stack: __STACKTRACE__}
             SpandexPhoenix.handle_errors(error, @tracer, @context_opts, @finish_opts)
         else
           conn ->
