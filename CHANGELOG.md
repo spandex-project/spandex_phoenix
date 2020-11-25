@@ -5,6 +5,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.0.5](https://github.com/spandex-project/spandex_phoenix/compare/1.0.4...v1.0.5) (2020-11-25)
+
+
+
+
+### Bug Fixes:
+
+* System.stacktrace() -> __STACKTRACE__
+
+* UnsupportedMediaTypeError not an error span
+
 ## [v1.0.4](https://github.com/spandex-project/spandex_phoenix/compare/1.0.3...v1.0.4) (2020-09-11)
 
 ### Bug Fixes:
