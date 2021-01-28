@@ -147,8 +147,12 @@ defmodule SpandexPhoenix.Telemetry do
   end
 
   def handle_router_event([:phoenix, :router_dispatch, :exception], _, meta, %{tracer: tracer}) do
-    # phx 1.5.3 has a breaking change that switches `:error` to `:reason`
-    error = meta[:reason] || meta[:error]
+    # phx 1.5.3 has a breaking change that switches `:error` to `:reason` + `:kind`
+    error =
+      case meta do
+        %{reason: reason, kind: kind} -> Exception.normalize(kind, reason)
+        %{error: error} -> error
+      end
 
     # :phoenix :router_dispatch :exception has far fewer keys in its metadata
     # (just `kind`, `error/reason`, and `stacktrace`)
