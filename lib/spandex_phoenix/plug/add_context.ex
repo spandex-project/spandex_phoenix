@@ -3,34 +3,13 @@ defmodule SpandexPhoenix.Plug.AddContext do
 
   @behaviour Plug
 
-  @init_opts Optimal.schema(
-               opts: [
-                 customize_metadata: {:function, 1},
-                 tracer: :atom
-               ],
-               defaults: [
-                 customize_metadata: &SpandexPhoenix.default_metadata/1,
-                 tracer: Application.get_env(:spandex_phoenix, :tracer)
-               ],
-               describe: [
-                 customize_metadata: """
-                 A function that takes the Plug.Conn for the current request
-                 and returns the desired span options to apply to the top-level
-                 span in the trace. The Plug.Conn is normally evaluated just
-                 before the response is sent to the client, to ensure that the
-                 most-accurate metadata can be collected. In cases where there
-                 is an unhandled error, it may only represent the initial
-                 request without any response information.
-                 """,
-                 tracer: "The tracing module to be used to start the trace."
-               ]
-             )
-
-  @doc false
-  def __schema__, do: @init_opts
+  @default_opts [
+    customize_metadata: &SpandexPhoenix.default_metadata/1,
+    tracer: Application.get_env(:spandex_phoenix, :tracer)
+  ]
 
   @impl Plug
-  def init(opts), do: Optimal.validate!(opts, @init_opts)
+  def init(opts), do: Keyword.merge(@default_opts, opts)
 
   @impl Plug
   def call(conn, opts) do

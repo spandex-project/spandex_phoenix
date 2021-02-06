@@ -62,11 +62,5 @@ defmodule FinishTracePlugTest do
         }
       }
     end
-
-    test "raises an exception when unexpected options are set" do
-      assert_raise ArgumentError, "Opt Validation Error: tr4c3r - is not allowed (no extra keys)", fn ->
-        call(FinishTrace, :get, "/", tr4c3r: AnotherTracer)
-      end
-    end
   end
 end

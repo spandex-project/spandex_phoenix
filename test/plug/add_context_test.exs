@@ -101,11 +101,5 @@ defmodule AddContextPlugTest do
       TestTracer.finish_span()
       assert %Spandex.Span{name: "request", resource: "GET /"} = TestTracer.current_span()
     end
-
-    test "raises an exception when unexpected options are set" do
-      assert_raise ArgumentError, "Opt Validation Error: tr4c3r - is not allowed (no extra keys)", fn ->
-        call(AddContext, :get, "/", tr4c3r: AnotherTracer)
-      end
-    end
   end
 end
