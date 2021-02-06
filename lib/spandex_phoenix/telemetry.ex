@@ -147,18 +147,21 @@ defmodule SpandexPhoenix.Telemetry do
   end
 
   def handle_router_event([:phoenix, :router_dispatch, :exception], _, meta, %{tracer: tracer}) do
-    # phx 1.5.3 has a breaking change that switches `:error` to `:reason` + `:kind`
-    error =
-      case meta do
-        %{reason: reason, kind: kind} -> Exception.normalize(kind, reason)
-        %{error: error} -> error
-      end
-
     # :phoenix :router_dispatch :exception has far fewer keys in its metadata
     # (just `kind`, `error/reason`, and `stacktrace`)
     # so we can't use `phx_controller?` or `filter_traces` to detect if we are tracing
     if tracer.current_trace_id() do
-      SpandexPhoenix.mark_span_as_error(tracer, error, meta.stacktrace)
+      # phx 1.5.4 has a breaking change that switches `:error` to `:reason`:
+      # https://github.com/phoenixframework/phoenix/compare/v1.5.3...v1.5.4#diff-c474801b0de930e7c3fd5808258094655afe8b008149ff17bee4caaf0d85a154R368
+      reason = meta[:reason] || meta[:error]
+
+      exception =
+        case meta[:kind] do
+          :error -> Exception.normalize(:error, reason, meta.stacktrace)
+          kind -> Exception.normalize(:error, {kind, reason}, meta.stacktrace)
+        end
+
+      SpandexPhoenix.mark_span_as_error(tracer, exception, meta.stacktrace)
       tracer.finish_span()
     end
   end
