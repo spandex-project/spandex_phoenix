@@ -7,4 +7,6 @@ config :spandex_phoenix, TestTracer,
   service: :spandex_phoenix,
   type: :web
 
+config :phoenix, :json_library, Jason
+
 import_config "#{Mix.env()}.exs"
