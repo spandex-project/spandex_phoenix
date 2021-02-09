@@ -315,18 +315,5 @@ defmodule TracerWithPhoenixEndpointTest do
 
       assert Keyword.get(http, :url) == "/hello/+🤯"
     end
-
-    test "validates the options passed to the use macro" do
-      Application.put_env(:spandex_phoenix, __MODULE__.EndpointWithInvalidFilterTraces, [])
-
-      assert_raise ArgumentError, "Opt Validation Error: filter_traces - must be of type {:function, 1}", fn ->
-        defmodule EndpointWithInvalidFilterTraces do
-          use Phoenix.Endpoint, otp_app: :spandex_phoenix
-          use SpandexPhoenix, filter_traces: &__MODULE__.customize_metadata/2
-
-          def customize_metadata(conn, _extra_arg), do: []
-        end
-      end
-    end
   end
 end

@@ -114,10 +114,6 @@ defmodule SpandexPhoenix do
     StartTrace
   }
 
-  @use_opts_schema StartTrace.__schema__()
-                   |> Optimal.merge(AddContext.__schema__())
-                   |> Optimal.merge(FinishTrace.__schema__())
-
   defmacro __using__(opts) do
     tracer = Keyword.get(opts, :tracer, Application.get_env(:spandex_phoenix, :tracer))
     if is_nil(tracer), do: raise("You must configure a :tracer for :spandex_phoenix")
@@ -135,7 +131,6 @@ defmodule SpandexPhoenix do
             finish_opts: finish_opts
           ] do
       @before_compile SpandexPhoenix
-      @after_compile SpandexPhoenix
       @use_opts use_opts
       @tracer tracer
       @start_opts StartTrace.init(start_opts)
@@ -167,13 +162,6 @@ defmodule SpandexPhoenix do
         end
       end
     end
-  end
-
-  # This needs to happen in __after_compile__ so that it's possible to
-  # reference a callback function referenced in the module itself without
-  # getting a validation error.
-  defmacro __after_compile__(%{module: module}, _bytecode) do
-    Optimal.validate!(Module.get_attribute(module, :use_opts), @use_opts_schema)
   end
 
   @doc """

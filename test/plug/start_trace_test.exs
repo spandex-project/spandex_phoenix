@@ -65,11 +65,5 @@ defmodule StartTracePlugTest do
       call(StartTrace, :get, "/", span_name: "my root span name")
       assert %Spandex.Span{name: "my root span name"} = TestTracer.current_span()
     end
-
-    test "raises an exception when unexpected options are set" do
-      assert_raise ArgumentError, "Opt Validation Error: spam_name - is not allowed (no extra keys)", fn ->
-        call(StartTrace, :get, "/", spam_name: "Eggs.Sausage.Spam")
-      end
-    end
   end
 end
