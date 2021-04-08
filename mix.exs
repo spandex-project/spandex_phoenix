@@ -1,6 +1,7 @@
 defmodule SpandexPhoenix.MixProject do
   use Mix.Project
 
+  @source_url "https://github.com/spandex-project/spandex_phoenix"
   @version "1.0.5"
 
   def project do
@@ -12,7 +13,6 @@ defmodule SpandexPhoenix.MixProject do
       compilers: compilers(Mix.env()),
       start_permanent: Mix.env() == :prod,
       package: package(),
-      description: description(),
       docs: docs(),
       deps: deps(),
       test_coverage: [tool: ExCoveralls],
@@ -28,10 +28,14 @@ defmodule SpandexPhoenix.MixProject do
 
   defp package do
     [
+      description: "Tools for integrating Phoenix with Spandex.",
       name: :spandex_phoenix,
       maintainers: ["Zachary Daniel", "Greg Mefford"],
-      licenses: ["MIT License"],
-      links: %{"GitHub" => "https://github.com/spandex-project/spandex_phoenix"}
+      licenses: ["MIT"],
+      links: %{
+        "Changelog" => "https://hexdocs.pm/spandex_phoenix/changelog.html",
+        "GitHub" => @source_url
+      }
     ]
   end
 
@@ -41,18 +45,17 @@ defmodule SpandexPhoenix.MixProject do
   defp compilers(:test), do: [:phoenix] ++ Mix.compilers()
   defp compilers(_), do: Mix.compilers()
 
-  defp description() do
-    """
-    Tools for integrating Phoenix with Spandex.
-    """
-  end
-
   defp docs do
     [
-      main: "readme",
       extras: [
-        "README.md"
-      ]
+        "CHANGELOG.md",
+        {:"LICENSE.md", [title: "License"]},
+        {:"README.md", [title: "Overview"]}
+      ],
+      main: "readme",
+      source_url: @source_url,
+      source_ref: "v#{@version}",
+      formatters: ["html"]
     ]
   end
 
