@@ -1,21 +1,22 @@
 # SpandexPhoenix
-[![CircleCI](https://circleci.com/gh/spandex-project/spandex_phoenix.svg?style=svg)](https://circleci.com/gh/spandex-project/spandex_phoenix)
-[![Inline docs](http://inch-ci.org/github/spandex-project/spandex_phoenix.svg)](http://inch-ci.org/github/spandex-project/spandex_phoenix)
-[![Coverage Status](https://coveralls.io/repos/github/spandex-project/spandex_phoenix/badge.svg)](https://coveralls.io/github/spandex-project/spandex_phoenix)
-[![Hex pm](http://img.shields.io/hexpm/v/spandex_phoenix.svg?style=flat)](https://hex.pm/packages/spandex_phoenix)
-[![SourceLevel](https://sourcelevel.io/github/spandex-project/spandex_phoenix.svg)](https://sourcelevel.io/github/spandex-project/spandex_phoenix)
 
-Phoenix and Plug integrations for the
-[Spandex](https://github.com/spandex-project/spandex) tracing library.
+[![Hex Version](https://img.shields.io/hexpm/v/spandex_phoenix.svg)](https://hex.pm/packages/spandex_phoenix)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/spandex_phoenix/)
+[![Total Downloads](https://img.shields.io/hexpm/dt/spandex_phoenix.svg)](https://hex.pm/packages/spandex_phoenix)
+[![License](https://img.shields.io/hexpm/l/spandex_phoenix.svg)](https://github.com/spandex-project/spandex_phoenix/blob/master/LICENSE)
+
+Phoenix and Plug integrations for the [Spandex] tracing library.
+
+[Spandex]: https://github.com/spandex-project/spandex
 
 ## Usage
 
-Add `spandex_phoenix` to your dendencies in `mix.exs`:
+Add `:spandex_phoenix` to your dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:spandex_phoenix, "~> 1.0.5"}
+    {:spandex_phoenix, "~> 1.0"}
   ]
 end
 ```
@@ -68,11 +69,13 @@ end
 ```
 
 If you use Phoenix, you don't need to use the following integration most likely, otherwise, you get the error messages like
+
 ```
 [error] Tried to start a trace over top of another trace
 ```
 
 Plug integration:
+
 ```elixir
 defmodule MyApp.Router do
   use Plug.Router
@@ -108,6 +111,12 @@ config :my_app, MyAppWeb.Endpoint,
 ```
 
 More details can also be found in the docs on [Hexdocs].
+
+## Copyright and License
+
+Copyright (c) 2021 Zachary Daniel & Greg Mefford
+
+Released under the MIT License, which can be found in [LICENSE.md](./LICENSE.md).
 
 [Hexdocs]: https://hexdocs.pm/spandex_phoenix
 [documentation for SpandexPhoenix]: https://hexdocs.pm/spandex_phoenix/SpandexPhoenix.html
