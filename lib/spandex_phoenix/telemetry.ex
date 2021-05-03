@@ -103,6 +103,47 @@ defmodule SpandexPhoenix.Telemetry do
     :telemetry.attach_many("spandex-router-telemetry", router_events, &__MODULE__.handle_router_event/4, opts)
   end
 
+  def configure(opts \\ []) do
+    unless function_exported?(:telemetry, :attach_many, 4) do
+      raise "Cannot install telemetry events without `:telemetry` dependency." <>
+              "Did you mean to use the Phoenix Instrumenters integration instead?"
+    end
+
+    {filter_traces, opts} = Keyword.pop(opts, :filter_traces, &SpandexPhoenix.trace_all_requests/1)
+    {customize_metadata, opts} = Keyword.pop(opts, :customize_metadata, &SpandexPhoenix.default_metadata/1)
+    {endpoint_prefix, opts} = Keyword.pop(opts, :endpoint_telemetry_prefix, [:phoenix, :endpoint])
+    {span_name, opts} = Keyword.pop(opts, :span_name, "request")
+    {span_opts, opts} = Keyword.pop(opts, :span_opts, type: :web)
+    {tracer, opts} = Keyword.pop(opts, :tracer)
+
+    unless Enum.empty?(opts) do
+      raise ArgumentError, "Unknown options: #{inspect(Keyword.keys(opts))}"
+    end
+
+    opts = %{
+      customize_metadata: customize_metadata,
+      filter_traces: filter_traces,
+      span_name: span_name,
+      span_opts: span_opts,
+      tracer: tracer
+    }
+
+    endpoint_events = [
+      endpoint_prefix ++ [:start],
+      endpoint_prefix ++ [:stop]
+    ]
+
+    :telemetry.attach_many("spandex-endpoint-telemetry", endpoint_events, &__MODULE__.handle_endpoint_event/4, opts)
+
+    router_events = [
+      [:phoenix, :router_dispatch, :start],
+      [:phoenix, :router_dispatch, :stop],
+      [:phoenix, :router_dispatch, :exception]
+    ]
+
+    :telemetry.attach_many("spandex-router-telemetry", router_events, &__MODULE__.handle_router_event/4, opts)
+  end
+
   @doc false
   def handle_endpoint_event(event, _, %{conn: conn}, %{tracer: tracer} = config) do
     if trace?(conn, config) do
