@@ -148,5 +148,34 @@ defmodule TracerWithPlugRouterTest do
       assert is_list(Keyword.get(error, :stacktrace))
       assert Keyword.get(error, :error?)
     end
+
+    test "is able to handle malformed URI" do
+      malicious_uri = "auth%%27%20AND%202*3*8=6*8%20AND%20%27zPT3%27!=%27zPT3%"
+      assert catch_error(call(Router, :get, malicious_uri))
+
+      assert_receive {
+        :sent_trace,
+        %Spandex.Trace{
+          spans: [
+            %Spandex.Span{
+              error: error,
+              http: http,
+              name: "request",
+              resource: "GET /<malformed_uri>"
+            }
+          ]
+        }
+      }
+
+      assert "GET" == Keyword.get(http, :method)
+      assert "<malformed_uri>" == Keyword.get(http, :url)
+
+      assert Keyword.get(error, :exception) == %Plug.Router.MalformedURIError{
+               message: "malformed URI \"#{malicious_uri}\"",
+               plug_status: 400
+             }
+
+      assert Keyword.get(error, :error?) == true
+    end
   end
 end
