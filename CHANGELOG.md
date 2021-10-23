@@ -5,10 +5,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.0.6](https://github.com/spandex-project/spandex_phoenix/compare/1.0.5...v1.0.6) (2021-10-23)
+
+* fix: function :function_clause.__struct__/0 is undefined by @fuelen in https://github.com/spandex-project/spandex_phoenix/pull/43
+* Tweak router exception handling and CI clean-up by @GregMefford in https://github.com/spandex-project/spandex_phoenix/pull/45
+* Update maintainers and sponsor link by @GregMefford in https://github.com/spandex-project/spandex_phoenix/pull/50
+
 ## [v1.0.5](https://github.com/spandex-project/spandex_phoenix/compare/1.0.4...v1.0.5) (2020-11-25)
-
-
-
 
 ### Bug Fixes:
 
