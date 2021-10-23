@@ -29,9 +29,12 @@ defmodule SpandexPhoenix.MixProject do
   defp package do
     [
       name: :spandex_phoenix,
-      maintainers: ["Zachary Daniel", "Greg Mefford"],
+      maintainers: ["Greg Mefford"],
       licenses: ["MIT License"],
-      links: %{"GitHub" => "https://github.com/spandex-project/spandex_phoenix"}
+      links: %{
+        "GitHub" => "https://github.com/spandex-project/spandex_phoenix",
+        "Sponsor" => "https://github.com/sponsors/GregMefford"
+      }
     ]
   end
 
