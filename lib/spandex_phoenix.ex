@@ -196,7 +196,7 @@ defmodule SpandexPhoenix do
         method: method,
         query_string: conn.query_string,
         status_code: conn.status,
-        url: URI.decode(conn.request_path),
+        url: uri_decode(conn.request_path),
         user_agent: user_agent
       ],
       resource: method <> " " <> route,
@@ -262,11 +262,17 @@ defmodule SpandexPhoenix do
   end
 
   defp replace_path_param_with_name(path_params, path_component) do
-    decoded_component = URI.decode(path_component)
+    decoded_component = uri_decode(path_component)
 
     Enum.find_value(path_params, decoded_component, fn
       {param_name, ^decoded_component} -> ":#{param_name}"
       _ -> nil
     end)
+  end
+
+  defp uri_decode(path_component) do
+    URI.decode(path_component)
+  rescue
+    _error -> "<malformed_uri>"
   end
 end

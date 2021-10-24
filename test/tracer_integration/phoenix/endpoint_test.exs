@@ -29,6 +29,10 @@ defmodule TracerWithPhoenixEndpointTest do
   end
 
   defmodule ErrorView do
+    def render("400.html", _) do
+      "400 bad request"
+    end
+
     def render("404.html", _) do
       "404 not found"
     end
@@ -314,6 +318,28 @@ defmodule TracerWithPhoenixEndpointTest do
       }
 
       assert Keyword.get(http, :url) == "/hello/+🤯"
+    end
+
+    test "handles malformed URI" do
+      malicious_uri = "auth%%27%20AND%202*3*8=6*8%20AND%20%27zPT3%27!=%27zPT3%"
+
+      assert_raise Phoenix.Router.MalformedURIError, fn ->
+        call(Endpoint, :get, malicious_uri)
+      end
+
+      assert_receive {
+        :sent_trace,
+        %Spandex.Trace{
+          spans: [
+            %Spandex.Span{
+              resource: "GET /<malformed_uri>",
+              http: http
+            }
+          ]
+        }
+      }
+
+      assert Keyword.get(http, :url) == "<malformed_uri>"
     end
 
     test "validates the options passed to the use macro" do
