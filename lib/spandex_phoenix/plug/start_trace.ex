@@ -52,7 +52,14 @@ defmodule SpandexPhoenix.Plug.StartTrace do
         tracer.continue_trace(opts[:span_name], span_context)
 
       {:error, _} ->
-        tracer.start_trace(opts[:span_name])
+        # check to ensure we're not already in a trace
+        # before we start another trace
+        if {:error, :no_trace_context} == tracer.current_context() do
+          tracer.start_trace(opts[:span_name])
+        else
+          # start a span if we're already in a trace
+          tracer.start_span(opts[:span_name])
+        end
     end
 
     conn
