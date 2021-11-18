@@ -62,9 +62,8 @@ defmodule SpandexPhoenix.MixProject do
   defp deps do
     [
       {:excoveralls, "~> 0.14", only: :test},
-      {:ex_doc, ">= 0.0.0", only: :dev},
+      {:ex_doc, "~> 0.25", only: :dev},
       {:git_ops, "~> 2.0", only: :dev},
-      {:inch_ex, "~> 2.0", only: [:dev, :test]},
       {:jason, "~> 1.0", only: [:dev, :test]},
       {:optimal, "~> 0.3"},
       {:phoenix, "~> 1.0", optional: true},
