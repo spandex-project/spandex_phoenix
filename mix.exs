@@ -66,7 +66,7 @@ defmodule SpandexPhoenix.MixProject do
       {:jason, "~> 1.0", only: [:dev, :test]},
       {:optimal, "~> 0.3"},
       {:phoenix, "~> 1.0", optional: true},
-      {:phoenix_html, "~> 2.0", only: [:dev, :test]},
+      {:phoenix_html, "~> 3.0", only: [:dev, :test]},
       {:plug, "~> 1.3"},
       {:spandex, "~> 2.2 or ~> 3.0"},
       {:telemetry, "~> 0.4 or ~> 1.0", optional: true}
