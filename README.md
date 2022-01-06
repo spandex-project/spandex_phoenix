@@ -24,7 +24,10 @@ end
 Configure it to use your desired `Spandex.Tracer` module in `config.exs`:
 
 ```elixir
-config :spandex_phoenix, tracer: MyApp.Tracer
+config :spandex_phoenix,
+  tracer: MyApp.Tracer,
+  service: :my_app_name,
+  adapter: MyApp.Adapter
 ```
 
 ### Usage: Phx >= 1.5 (Telemetry)
