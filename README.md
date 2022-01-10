@@ -37,7 +37,7 @@ telemetry installation instructions below.*
 SpandexPhoenix supports using Phoenix 1.5's Telemetry events to create spans for
 `Phoenix.Controller` timing, with the `resource` name set to the controller action.
 
-To attach `Spandex.Telemetry`'s event handlers, call `Spandex.Telemetry.install/{0,1}`
+To attach `Spandex.Telemetry`'s event handlers, call `SpandexPhoenix.Telemetry.install/{0,1}`
 during your application's startup:
 
 ```elixir
