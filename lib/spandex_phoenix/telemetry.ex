@@ -134,9 +134,10 @@ defmodule SpandexPhoenix.Telemetry do
   end
 
   @doc false
-  def handle_router_event([:phoenix, :router_dispatch, :start], _, meta, %{tracer: tracer}) do
+  def handle_router_event([:phoenix, :router_dispatch, :start], _, meta, %{tracer: tracer, span_opts: opts}) do
     if phx_controller?(meta) do
-      tracer.start_span("phx.router_dispatch", resource: "#{meta.plug}.#{meta.plug_opts}")
+      opts_with_resource = Keyword.put(opts, :resource, "#{meta.plug}.#{meta.plug_opts}")
+      tracer.start_span("phx.router_dispatch", opts_with_resource)
     end
   end
 
