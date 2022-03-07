@@ -29,7 +29,7 @@ config :spandex_phoenix, tracer: MyApp.Tracer
 
 ### Usage: Phx >= 1.5 (Telemetry)
 
-**Upgrade Note**: *If you're updating your SpandexPhoenix code from using it with previous versions of Pheonix,
+**Upgrade Note**: *If you're updating your SpandexPhoenix code from using it with previous versions of Phoenix,
 you must first remove all the code detailed in `Usage: Plug & Phx < 1.5` before following
 telemetry installation instructions below.*
 
