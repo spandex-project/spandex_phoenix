@@ -92,7 +92,14 @@ defmodule SpandexPhoenix.Telemetry do
       endpoint_prefix ++ [:stop]
     ]
 
-    :telemetry.attach_many("spandex-endpoint-telemetry", endpoint_events, &__MODULE__.handle_endpoint_event/4, opts)
+    handler_id_suffix = "#{Enum.join(endpoint_prefix, "-")}"
+
+    :telemetry.attach_many(
+      "spandex-endpoint-telemetry-#{handler_id_suffix}",
+      endpoint_events,
+      &__MODULE__.handle_endpoint_event/4,
+      opts
+    )
 
     router_events = [
       [:phoenix, :router_dispatch, :start],
@@ -100,7 +107,12 @@ defmodule SpandexPhoenix.Telemetry do
       [:phoenix, :router_dispatch, :exception]
     ]
 
-    :telemetry.attach_many("spandex-router-telemetry", router_events, &__MODULE__.handle_router_event/4, opts)
+    :telemetry.attach_many(
+      "spandex-router-telemetry-#{handler_id_suffix}",
+      router_events,
+      &__MODULE__.handle_router_event/4,
+      opts
+    )
   end
 
   @doc false
