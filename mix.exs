@@ -1,7 +1,7 @@
 defmodule SpandexPhoenix.MixProject do
   use Mix.Project
 
-  @version "1.0.6"
+  @version "1.1.0"
   @source_url "https://github.com/spandex-project/spandex_phoenix"
 
   def project do
