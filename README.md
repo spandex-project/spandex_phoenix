@@ -16,7 +16,7 @@ Add `:spandex_phoenix` to your dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:spandex_phoenix, "~> 1.0"}
+    {:spandex_phoenix, "~> 1.1"}
   ]
 end
 ```

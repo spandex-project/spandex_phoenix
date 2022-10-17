@@ -1,9 +1,29 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
-See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
-
 <!-- changelog -->
+
+## [v1.1.0](https://github.com/spandex-project/spandex_phoenix/compare/v1.0.6...1.1.0) (2022-10-16)
+
+## Features
+* Remove usage of the transitive dependency Optimal by @kamilkowalski in https://github.com/spandex-project/spandex_phoenix/pull/44
+* Add span opts in router dispatch by @davidjulien in https://github.com/spandex-project/spandex_phoenix/pull/58
+
+## Bug Fixes
+* Differentiate telemetry handlers using endpoint_prefix so that we can define multiple by @cheerfulstoic in https://github.com/spandex-project/spandex_phoenix/pull/60
+
+## Chores
+* Clean up unnecessary dev/test dependencies and use latest Elixir in CI by @GregMefford in https://github.com/spandex-project/spandex_phoenix/pull/53
+* Misc doc changes by @kianmeng in https://github.com/spandex-project/spandex_phoenix/pull/47
+* Update example in readme by @alexgaribay in https://github.com/spandex-project/spandex_phoenix/pull/56
+* README Update by @barberj in https://github.com/spandex-project/spandex_phoenix/pull/57
+
+## New Contributors
+* @kianmeng made their first contribution in https://github.com/spandex-project/spandex_phoenix/pull/47
+* @alexgaribay made their first contribution in https://github.com/spandex-project/spandex_phoenix/pull/56
+* @barberj made their first contribution in https://github.com/spandex-project/spandex_phoenix/pull/57
+* @davidjulien made their first contribution in https://github.com/spandex-project/spandex_phoenix/pull/58
+* @cheerfulstoic made their first contribution in https://github.com/spandex-project/spandex_phoenix/pull/60
+
 
 ## [v1.0.6](https://github.com/spandex-project/spandex_phoenix/compare/1.0.5...v1.0.6) (2021-10-23)
 

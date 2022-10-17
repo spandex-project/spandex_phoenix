@@ -1,7 +1,7 @@
 defmodule SpandexPhoenix.MixProject do
   use Mix.Project
 
-  @version "1.0.6"
+  @version "1.1.0"
   @source_url "https://github.com/spandex-project/spandex_phoenix"
 
   def project do
@@ -65,7 +65,6 @@ defmodule SpandexPhoenix.MixProject do
       {:excoveralls, "~> 0.14", only: :test},
       {:ex_doc, "~> 0.25", only: :dev},
       {:jason, "~> 1.0", only: [:dev, :test]},
-      {:optimal, "~> 0.3"},
       {:phoenix, "~> 1.0", optional: true},
       {:phoenix_html, "~> 3.0", only: [:dev, :test]},
       {:plug, "~> 1.3"},
