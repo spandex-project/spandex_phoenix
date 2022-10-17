@@ -134,9 +134,10 @@ defmodule SpandexPhoenix.Telemetry do
   end
 
   @doc false
-  def handle_router_event([:phoenix, :router_dispatch, :start], _, meta, %{tracer: tracer}) do
+  def handle_router_event([:phoenix, :router_dispatch, :start], _, meta, %{tracer: tracer, span_opts: opts}) do
     if phx_controller?(meta) do
-      tracer.start_span("phx.router_dispatch", resource: "#{meta.plug}.#{meta.plug_opts}")
+      opts_with_resource = Keyword.put(opts, :resource, "#{meta.plug}.#{meta.plug_opts}")
+      tracer.start_span("phx.router_dispatch", opts_with_resource)
     end
   end
 
@@ -146,7 +147,7 @@ defmodule SpandexPhoenix.Telemetry do
     end
   end
 
-  def handle_router_event([:phoenix, :router_dispatch, :exception], _, meta, %{tracer: tracer}) do
+  def handle_router_event([:phoenix, :router_dispatch, :exception], _, meta, %{tracer: tracer, span_opts: opts}) do
     # :phoenix :router_dispatch :exception has far fewer keys in its metadata
     # (just `kind`, `error/reason`, and `stacktrace`)
     # so we can't use `phx_controller?` or `filter_traces` to detect if we are tracing
@@ -162,7 +163,7 @@ defmodule SpandexPhoenix.Telemetry do
         end
 
       SpandexPhoenix.mark_span_as_error(tracer, exception, meta.stacktrace)
-      tracer.finish_span()
+      tracer.finish_span(opts)
     end
   end
 
