@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :spandex_phoenix, tracer: TestTracer
 

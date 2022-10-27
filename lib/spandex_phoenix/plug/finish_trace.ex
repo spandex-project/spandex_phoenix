@@ -4,7 +4,7 @@ defmodule SpandexPhoenix.Plug.FinishTrace do
   @behaviour Plug
 
   @default_opts [
-    tracer: Application.get_env(:spandex_phoenix, :tracer)
+    tracer: Application.compile_env(:spandex_phoenix, :tracer)
   ]
 
   @impl Plug
