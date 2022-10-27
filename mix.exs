@@ -8,7 +8,7 @@ defmodule SpandexPhoenix.MixProject do
     [
       app: :spandex_phoenix,
       version: @version,
-      elixir: "~> 1.6",
+      elixir: "~> 1.10",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: compilers(Mix.env()),
       start_permanent: Mix.env() == :prod,

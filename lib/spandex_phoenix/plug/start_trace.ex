@@ -8,7 +8,7 @@ defmodule SpandexPhoenix.Plug.StartTrace do
   @default_opts [
     filter_traces: &SpandexPhoenix.trace_all_requests/1,
     span_name: "request",
-    tracer: Application.get_env(:spandex_phoenix, :tracer)
+    tracer: Application.compile_env(:spandex_phoenix, :tracer)
   ]
 
   @impl Plug

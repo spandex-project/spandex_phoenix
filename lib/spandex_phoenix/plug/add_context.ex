@@ -5,7 +5,7 @@ defmodule SpandexPhoenix.Plug.AddContext do
 
   @default_opts [
     customize_metadata: &SpandexPhoenix.default_metadata/1,
-    tracer: Application.get_env(:spandex_phoenix, :tracer)
+    tracer: Application.compile_env(:spandex_phoenix, :tracer)
   ]
 
   @impl Plug
